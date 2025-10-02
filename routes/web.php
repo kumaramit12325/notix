@@ -299,6 +299,11 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     Route::resource('appdashboard/overview', AnalytiOverviewController::class);
     Route::resource('appdashboard/subscription', AnalytiSubscriptionController::class);
 
+    // Push notification subscription routes
+    Route::post('push-subscriptions/subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'subscribe'])->name('push.subscribe');
+    Route::post('push-subscriptions/unsubscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'unsubscribe'])->name('push.unsubscribe');
+    Route::get('push-subscriptions/vapid-public-key', [\App\Http\Controllers\PushSubscriptionController::class, 'getPublicKey'])->name('push.vapid-key');
+
 });
 
 // Agent routes - for agent users

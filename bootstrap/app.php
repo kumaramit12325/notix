@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        $middleware->validateCsrfTokens(except: [
+            'push-subscriptions/*',
+        ]);
+
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'user' => UserMiddleware::class,
