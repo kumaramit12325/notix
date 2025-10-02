@@ -19,11 +19,15 @@ export default defineConfig({
         port: 5173,
         strictPort: true,
         allowedHosts: true,
-        cors: true,
+        origin: `https://${process.env.REPLIT_DEV_DOMAIN}:5173`,
+        cors: {
+            origin: '*',
+            credentials: true,
+        },
         hmr: {
-            host: process.env.REPLIT_DEV_DOMAIN,
             protocol: 'wss',
-            clientPort: 443,
+            host: process.env.REPLIT_DEV_DOMAIN,
+            port: 5173,
         },
         watch: {
             ignored: [
