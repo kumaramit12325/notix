@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\UserSite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class UserSiteController extends Controller
@@ -213,32 +212,5 @@ class UserSiteController extends Controller
             'message' => $site->is_connected ? 'Site connected!' : 'Site disconnected!',
             'site' => $site
         ]);
-    }
-
-    /**
-     * Upload an image for site icons
-     */
-    public function uploadImage(Request $request)
-    {
-        $validated = $request->validate([
-            'image' => 'required|image|mimes:jpeg,jpg,png,gif,webp,avif|max:2048',
-        ]);
-
-        try {
-            $image = $request->file('image');
-            $path = $image->store('site-icons', 'public');
-            $url = Storage::url($path);
-
-            return response()->json([
-                'success' => true,
-                'url' => $url,
-                'path' => $path
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to upload image: ' . $e->getMessage()
-            ], 500);
-        }
     }
 }
