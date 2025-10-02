@@ -91,18 +91,31 @@ class UserSiteController extends Controller
     {
         try {
             // Handle both form submissions and API calls
-            $validated = $request->validate([
-                'site_name' => 'required|string|max:255',
-                'site_url' => 'required|url|max:255',
-                'badge_icon_url' => 'nullable|url|max:255',
-                'notification_icon_url' => 'nullable|url|max:255',
-                'status' => 'sometimes|in:Active,Inactive,Pending',
-                // Legacy field names for backward compatibility
-                'siteName' => 'sometimes|string|max:255',
-                'siteUrl' => 'sometimes|url|max:255',
-                'badgeIconUrl' => 'sometimes|string|max:255',
-                'notificationIconUrl' => 'sometimes|string|max:255',
-            ]);
+            // Accept both snake_case and camelCase field names
+            $rules = [];
+            
+            // Check which field format is being used
+            if ($request->has('siteName') || $request->has('siteUrl')) {
+                // Legacy camelCase format
+                $rules = [
+                    'siteName' => 'required|string|max:255',
+                    'siteUrl' => 'required|url|max:255',
+                    'badgeIconUrl' => 'nullable|url|max:255',
+                    'notificationIconUrl' => 'nullable|url|max:255',
+                ];
+            } else {
+                // Standard snake_case format
+                $rules = [
+                    'site_name' => 'required|string|max:255',
+                    'site_url' => 'required|url|max:255',
+                    'badge_icon_url' => 'nullable|url|max:255',
+                    'notification_icon_url' => 'nullable|url|max:255',
+                ];
+            }
+            
+            $rules['status'] = 'sometimes|in:Active,Inactive,Pending';
+            
+            $validated = $request->validate($rules);
 
             $user = Auth::user();
             
@@ -120,13 +133,13 @@ class UserSiteController extends Controller
                 'is_connected' => false,
             ];
 
-            // Additional URL validation for non-empty fields
-            if (!empty($siteData['badge_icon_url']) && !filter_var($siteData['badge_icon_url'], FILTER_VALIDATE_URL)) {
-                throw new \Exception('The badge icon URL must be a valid URL.');
+            // Convert empty strings to null for icon URLs
+            if (empty($siteData['badge_icon_url'])) {
+                $siteData['badge_icon_url'] = null;
             }
             
-            if (!empty($siteData['notification_icon_url']) && !filter_var($siteData['notification_icon_url'], FILTER_VALIDATE_URL)) {
-                throw new \Exception('The notification icon URL must be a valid URL.');
+            if (empty($siteData['notification_icon_url'])) {
+                $siteData['notification_icon_url'] = null;
             }
             
             $site = $user->sites()->create($siteData);
