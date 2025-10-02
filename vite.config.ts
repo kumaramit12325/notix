@@ -19,8 +19,22 @@ export default defineConfig({
         port: 5173,
         strictPort: true,
         allowedHosts: true,
+        cors: true,
+        hmr: {
+            host: process.env.REPLIT_DEV_DOMAIN,
+            protocol: 'wss',
+            clientPort: 443,
+        },
         watch: {
-            ignored: ['**/vendor/**', '**/storage/**', '**/node_modules/**'],
+            ignored: [
+                '**/vendor/**',
+                '**/storage/**',
+                '**/node_modules/**',
+                '**/.cache/**',
+                '**/.local/**',
+                '**/.replit',
+                '**/.config/**',
+            ],
         },
     },
     esbuild: {
