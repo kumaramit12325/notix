@@ -216,6 +216,7 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     Route::resource('user-sites', UserSiteController::class);
     Route::post('user-sites/{site}/toggle-connection', [UserSiteController::class, 'toggleConnection'])->name('user-sites.toggle-connection');
     Route::post('user-sites/{site}/verify', [SiteVerificationController::class, 'verify'])->name('user-sites.verify');
+    Route::post('user-sites/upload-image', [UserSiteController::class, 'uploadImage'])->name('user-sites.upload-image');
     
     // User YouTube routes - users can manage their own channels
     Route::get('user/youtube', [YouTubeController::class, 'userIndex'])->name('user.youtube.index');
