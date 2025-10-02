@@ -50,7 +50,7 @@ class SiteVerificationController extends Controller
             // Check if API URL is configured
             $hasApiUrl = str_contains($html, 'apiUrl');
 
-            $isInstalled = $hasScript && $hasAppId && $hasInit;
+            $isInstalled = $hasScript && $hasAppId && $hasInit && $hasApiUrl;
 
             if ($isInstalled) {
                 // Mark site as connected
@@ -76,6 +76,9 @@ class SiteVerificationController extends Controller
                 }
                 if (!$hasInit) {
                     $issues[] = 'Alertwise initialization code not found';
+                }
+                if (!$hasApiUrl) {
+                    $issues[] = 'API URL (apiUrl) not configured in the initialization code';
                 }
 
                 return response()->json([

@@ -75,6 +75,14 @@ export function InstallScriptModal({ isOpen, onClose, site }: InstallScriptModal
         }
       })
       
+      if (response.status === 403) {
+        setVerificationResult({
+          success: false,
+          message: 'You are not authorized to verify this site.'
+        })
+        return
+      }
+      
       const data = await response.json()
       setVerificationResult(data)
       setActiveStep(3)
@@ -87,7 +95,7 @@ export function InstallScriptModal({ isOpen, onClose, site }: InstallScriptModal
     } catch (error) {
       setVerificationResult({
         success: false,
-        message: 'Failed to verify installation. Please try again.'
+        message: 'Failed to verify installation. Please check your internet connection and try again.'
       })
     } finally {
       setVerifying(false)
