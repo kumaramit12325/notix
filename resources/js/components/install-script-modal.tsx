@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { usePage } from '@inertiajs/react'
+import { usePage, router } from '@inertiajs/react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Check, Copy, Download, Globe } from 'lucide-react'
+import { Check, Copy, Download, Globe, Loader2, AlertCircle, CheckCircle } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface InstallScriptModalProps {
   isOpen: boolean
@@ -18,6 +19,13 @@ interface InstallScriptModalProps {
 export function InstallScriptModal({ isOpen, onClose, site }: InstallScriptModalProps) {
   const [copiedStep, setCopiedStep] = useState<number | null>(null)
   const [activeStep, setActiveStep] = useState(1)
+  const [verifying, setVerifying] = useState(false)
+  const [verificationResult, setVerificationResult] = useState<{
+    success: boolean
+    message: string
+    details?: any
+  } | null>(null)
+  
   const { props } = usePage()
   const vapidPublicKey = (props as any).vapidPublicKey || ''
   const alertwiseUrl = (props as any).appUrl || window.location.origin
@@ -52,6 +60,38 @@ export function InstallScriptModal({ isOpen, onClose, site }: InstallScriptModal
     a.download = 'service-worker.js'
     a.click()
     URL.revokeObjectURL(url)
+  }
+
+  const handleVerify = async () => {
+    setVerifying(true)
+    setVerificationResult(null)
+    
+    try {
+      const response = await fetch(`/user-sites/${site.id}/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        }
+      })
+      
+      const data = await response.json()
+      setVerificationResult(data)
+      setActiveStep(3)
+      
+      if (data.success) {
+        setTimeout(() => {
+          router.reload()
+        }, 2000)
+      }
+    } catch (error) {
+      setVerificationResult({
+        success: false,
+        message: 'Failed to verify installation. Please try again.'
+      })
+    } finally {
+      setVerifying(false)
+    }
   }
 
   const serviceWorkerContent = `// Service Worker for ${site.site_name}
@@ -171,20 +211,40 @@ self.addEventListener('notificationclick', function(event) {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className={`flex h-6 w-6 items-center justify-center rounded-full ${activeStep >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'} text-sm font-semibold`}>
-                    {activeStep > 3 ? <Check className="h-4 w-4" /> : '3'}
+                    {verificationResult?.success ? <Check className="h-4 w-4" /> : '3'}
                   </div>
                   <h4 className="font-semibold">Verify</h4>
                 </div>
 
-                <div className="ml-9">
+                <div className="ml-9 space-y-3">
                   <Button
-                    onClick={() => {
-                      setActiveStep(3)
-                      alert('Verification will check if the script is properly installed on your website.')
-                    }}
+                    onClick={handleVerify}
+                    disabled={verifying}
+                    className="gap-2"
                   >
-                    Verify Installation
+                    {verifying && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {verifying ? 'Verifying...' : 'Verify Installation'}
                   </Button>
+
+                  {verificationResult && (
+                    <Alert variant={verificationResult.success ? "default" : "destructive"}>
+                      {verificationResult.success ? (
+                        <CheckCircle className="h-4 w-4" />
+                      ) : (
+                        <AlertCircle className="h-4 w-4" />
+                      )}
+                      <AlertDescription>
+                        {verificationResult.message}
+                        {verificationResult.details?.issues && (
+                          <ul className="mt-2 ml-4 list-disc text-sm">
+                            {verificationResult.details.issues.map((issue: string, index: number) => (
+                              <li key={index}>{issue}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
               </div>
 
