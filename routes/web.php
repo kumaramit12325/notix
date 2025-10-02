@@ -29,6 +29,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\User\ProfileController as UserProfileController;
 use App\Http\Controllers\UserPaymentController;
 use App\Http\Controllers\User\UserSiteController;
+use App\Http\Controllers\User\SiteVerificationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -214,6 +215,7 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     // User sites routes
     Route::resource('user-sites', UserSiteController::class);
     Route::post('user-sites/{site}/toggle-connection', [UserSiteController::class, 'toggleConnection'])->name('user-sites.toggle-connection');
+    Route::post('user-sites/{site}/verify', [SiteVerificationController::class, 'verify'])->name('user-sites.verify');
     
     // User YouTube routes - users can manage their own channels
     Route::get('user/youtube', [YouTubeController::class, 'userIndex'])->name('user.youtube.index');
