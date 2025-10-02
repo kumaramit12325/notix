@@ -221,13 +221,8 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     // Site-specific management routes
     Route::prefix('sites/{site}')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('site.dashboard');
-        Route::get('/config', function ($siteId) {
-            $site = \App\Models\UserSite::findOrFail($siteId);
-            if ($site->user_id !== auth()->id()) {
-                abort(403);
-            }
-            return Inertia::render('appdashboard/setting/site-config', ['site' => $site]);
-        })->name('site.config');
+        Route::get('/config', [\App\Http\Controllers\User\SiteConfigController::class, 'index'])->name('site.config');
+        Route::post('/config', [\App\Http\Controllers\User\SiteConfigController::class, 'update'])->name('site.config.update');
         Route::get('/subscribers', [SubscriberController::class, 'index'])->name('site.subscribers');
     });
     

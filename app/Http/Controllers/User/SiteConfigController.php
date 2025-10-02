@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Auth;
 
 class SiteConfigController extends Controller
 {
+    public function index($siteId)
+    {
+        $site = UserSite::findOrFail($siteId);
+        
+        if ($site->user_id !== Auth::id()) {
+            abort(403);
+        }
+        
+        return inertia('appdashboard/setting/site-config', [
+            'site' => $site
+        ]);
+    }
+    
     public function update(Request $request, $siteId)
     {
         $site = UserSite::findOrFail($siteId);
@@ -18,10 +31,8 @@ class SiteConfigController extends Controller
         }
         
         $validated = $request->validate([
-            'site_name' => 'sometimes|string|max:255',
-            'site_url' => 'sometimes|url|max:255',
-            'badge_icon_url' => 'nullable|url|max:255',
-            'notification_icon_url' => 'nullable|url|max:255',
+            'name' => 'sometimes|string|max:255',
+            'url' => 'sometimes|url|max:255',
             'remove_powered_by' => 'sometimes|boolean',
             'universal_subscription_link' => 'sometimes|boolean',
         ]);
