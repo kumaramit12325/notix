@@ -22,16 +22,20 @@ export function InstallScriptModal({ isOpen, onClose, site }: InstallScriptModal
   const vapidPublicKey = (props as any).vapidPublicKey || ''
 
   const appId = `${site.id}-${site.site_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`
+  const alertwiseUrl = window.location.origin
   
-  const headScript = `<script src="${window.location.origin}/js/alertwise.js"></script>
+  const headScript = `<script src="${alertwiseUrl}/js/alertwise.js"></script>
 <script type="text/javascript">
   alertwise = window.alertwise || {};
   alertwise.push(['init', {
     appId: "${appId}",
-    apiUrl: "${window.location.origin}",
+    apiUrl: "${alertwiseUrl}",
     serviceWorkerUrl: "/service-worker.js",
     vapidPublicKey: "${vapidPublicKey}"
   }]);
+  
+  // Request notification permission
+  alertwise.push(['requestPermission']);
 </script>`
 
   const handleCopy = (text: string, step: number) => {
