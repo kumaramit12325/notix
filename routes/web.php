@@ -216,6 +216,20 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     Route::resource('user-sites', UserSiteController::class);
     Route::post('user-sites/{site}/toggle-connection', [UserSiteController::class, 'toggleConnection'])->name('user-sites.toggle-connection');
     Route::post('user-sites/{site}/verify', [SiteVerificationController::class, 'verify'])->name('user-sites.verify');
+    Route::post('user-sites/upload-image', [UserSiteController::class, 'uploadImage'])->name('user-sites.upload-image');
+    
+    // Site-specific management routes
+    Route::prefix('sites/{site}')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('site.dashboard');
+        Route::get('/config', function ($siteId) {
+            $site = \App\Models\UserSite::findOrFail($siteId);
+            if ($site->user_id !== auth()->id()) {
+                abort(403);
+            }
+            return Inertia::render('appdashboard/setting/site-config', ['site' => $site]);
+        })->name('site.config');
+        Route::get('/subscribers', [SubscriberController::class, 'index'])->name('site.subscribers');
+    });
     
     // User YouTube routes - users can manage their own channels
     Route::get('user/youtube', [YouTubeController::class, 'userIndex'])->name('user.youtube.index');

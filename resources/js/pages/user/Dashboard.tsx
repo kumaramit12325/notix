@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import UserLayout from '@/layouts/user-layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Grid2X2, RefreshCw, Trash2 } from 'lucide-react'
+import { Grid2X2, RefreshCw, Trash2, Settings } from 'lucide-react'
 import { AddSiteModal } from '@/components/add-site-modal'
 import { InstallScriptModal } from '@/components/install-script-modal'
 
@@ -124,17 +124,25 @@ export default function Dashboard({ sites = [] }: DashboardProps) {
                   }
                 </CardDescription>
 
-                <div className="flex items-center gap-3">
-                  <Button 
-                    size="sm" 
-                    className="px-5"
-                    onClick={() => site.is_connected ? handleToggleConnection(site.id) : handleOpenInstallModal(site)}
-                  >
-                    {site.is_connected ? 'Connected' : 'Install'}
-                  </Button>
-                  <Button size="icon" variant="outline" className="h-9 w-9">
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
+                <div className="flex items-center gap-2">
+                  {site.is_connected ? (
+                    <Button 
+                      size="sm" 
+                      className="px-5 bg-blue-600 hover:bg-blue-700"
+                      onClick={() => router.visit(`/sites/${site.id}/dashboard`)}
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      Manage
+                    </Button>
+                  ) : (
+                    <Button 
+                      size="sm" 
+                      className="px-5"
+                      onClick={() => handleOpenInstallModal(site)}
+                    >
+                      Install
+                    </Button>
+                  )}
                   <Button 
                     size="icon" 
                     variant="destructive" 
