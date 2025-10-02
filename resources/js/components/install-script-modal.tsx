@@ -20,9 +20,9 @@ export function InstallScriptModal({ isOpen, onClose, site }: InstallScriptModal
   const [activeStep, setActiveStep] = useState(1)
   const { props } = usePage()
   const vapidPublicKey = (props as any).vapidPublicKey || ''
+  const alertwiseUrl = (props as any).appUrl || window.location.origin
 
   const appId = `${site.id}-${site.site_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`
-  const alertwiseUrl = window.location.origin
   
   const headScript = `<script src="${alertwiseUrl}/js/alertwise.js"></script>
 <script type="text/javascript">
