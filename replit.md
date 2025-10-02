@@ -49,18 +49,38 @@ Preferred communication style: Simple, everyday language.
 
 ## Data Layer
 
-**Note**: The repository shows configuration for potential database integration but no specific database schema files were provided. The application architecture suggests it will use:
-- Eloquent ORM for database interactions
-- Migrations for schema management
-- Likely PostgreSQL or MySQL (common Laravel choices)
+**Database**: PostgreSQL with Eloquent ORM for database interactions.
 
-Key data entities based on UI:
-- Users (authentication, profiles)
-- Campaigns (notification campaigns)
-- Domains (managed domains for push notifications)
-- Audiences (subscriber segmentation)
-- Subscriptions (user subscription tracking)
-- Push notifications (sent/scheduled notifications)
+**Schema Management**: Laravel migrations for schema changes. Database push command: `php artisan migrate` for applying schema changes.
+
+**Key Data Entities**:
+- **Users**: Authentication, profiles, owned sites
+- **UserSites**: User-owned sites with configuration
+  - Fields: name, url, script_token, is_connected, badge_icon_url, notification_icon_url, remove_powered_by, universal_subscription_link
+  - Relationships: belongs to User
+- **Campaigns**: Notification campaigns
+- **Domains**: Managed domains for push notifications
+- **Audiences**: Subscriber segmentation
+- **Subscriptions**: User subscription tracking
+- **Push notifications**: Sent/scheduled notifications
+
+## Site Management System
+
+**Site Configuration** (`/sites/{site}/config`):
+- Site name and URL management
+- Icon upload for badges and notifications (stored in `storage/app/public/site-icons/`)
+- Remove branding toggle (remove_powered_by field)
+- Universal subscription link toggle (universal_subscription_link field)
+- Form validation with Inertia.js form helper
+- Changes persist via POST to SiteConfigController::update()
+
+**Site-Specific Routes** (Protected with user ownership validation):
+- GET `/sites/{site}/dashboard` - Site overview dashboard
+- GET `/sites/{site}/config` - Site configuration page
+- POST `/sites/{site}/config` - Save configuration changes
+- GET `/sites/{site}/subscribers` - Subscriber management
+
+**Access Control**: All site routes validate that `$site->user_id === Auth::id()` before allowing access
 
 ## External Dependencies
 
