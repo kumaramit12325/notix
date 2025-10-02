@@ -21,6 +21,9 @@ export default defineConfig({
         hmr: {
             host: process.env.REPL_SLUG ? `${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co` : 'localhost',
         },
+        watch: {
+            ignored: ['**/vendor/**', '**/storage/**', '**/node_modules/**'],
+        },
     },
     esbuild: {
         jsx: 'automatic',
