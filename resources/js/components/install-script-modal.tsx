@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { usePage } from '@inertiajs/react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Check, Copy, Download, Globe } from 'lucide-react'
@@ -17,6 +18,8 @@ interface InstallScriptModalProps {
 export function InstallScriptModal({ isOpen, onClose, site }: InstallScriptModalProps) {
   const [copiedStep, setCopiedStep] = useState<number | null>(null)
   const [activeStep, setActiveStep] = useState(1)
+  const { props } = usePage()
+  const vapidPublicKey = (props as any).vapidPublicKey || ''
 
   const appId = `${site.id}-${site.site_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`
   
@@ -27,7 +30,7 @@ export function InstallScriptModal({ isOpen, onClose, site }: InstallScriptModal
     appId: "${appId}",
     apiUrl: "${window.location.origin}",
     serviceWorkerUrl: "/service-worker.js",
-    vapidPublicKey: "${(window as any).vapidPublicKey || ''}"
+    vapidPublicKey: "${vapidPublicKey}"
   }]);
 </script>`
 
