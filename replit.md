@@ -37,7 +37,7 @@ Preferred communication style: Simple, everyday language.
 
 **API Approach**: No REST API - uses Inertia.js for direct controller-to-component data flow. Forms submit to Laravel routes which return Inertia responses.
 
-**Business Logic**: Push notification system with web push protocol support via `laravel-notification-channels/webpush` package. PDF generation capability through `dompdf` integration.
+**Business Logic**: Push notification system with web push protocol support via `laravel-notification-channels/webpush` package. PDF generation capability through `dompdf` integration. File upload system for site icons using Laravel's Storage facade with public disk access.
 
 **Push Notification System**:
 - VAPID authentication with keys stored in .env (VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT)
