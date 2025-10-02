@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Grid2X2, RefreshCw, Trash2 } from 'lucide-react'
 import { AddSiteModal } from '@/components/add-site-modal'
+import { InstallScriptModal } from '@/components/install-script-modal'
 
 interface Site {
   id: number;
@@ -25,6 +26,8 @@ interface DashboardProps {
 
 export default function Dashboard({ sites = [] }: DashboardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [installModalOpen, setInstallModalOpen] = useState(false);
+  const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleOpenModal = () => {
@@ -55,6 +58,11 @@ export default function Dashboard({ sites = [] }: DashboardProps) {
       return () => clearTimeout(timer);
     }
   }, [successMessage]);
+
+  const handleOpenInstallModal = (site: Site) => {
+    setSelectedSite(site);
+    setInstallModalOpen(true);
+  };
 
   const handleToggleConnection = (siteId: number) => {
     router.post(`/user-sites/${siteId}/toggle-connection`, {}, {
@@ -120,7 +128,7 @@ export default function Dashboard({ sites = [] }: DashboardProps) {
                   <Button 
                     size="sm" 
                     className="px-5"
-                    onClick={() => handleToggleConnection(site.id)}
+                    onClick={() => site.is_connected ? handleToggleConnection(site.id) : handleOpenInstallModal(site)}
                   >
                     {site.is_connected ? 'Connected' : 'Install'}
                   </Button>
@@ -165,6 +173,15 @@ export default function Dashboard({ sites = [] }: DashboardProps) {
         onClose={handleCloseModal} 
         onSubmit={handleSiteSubmit}
       />
+
+      {/* Install Script Modal */}
+      {selectedSite && (
+        <InstallScriptModal
+          isOpen={installModalOpen}
+          onClose={() => setInstallModalOpen(false)}
+          site={selectedSite}
+        />
+      )}
     </UserLayout>
   )
 }
