@@ -54,6 +54,13 @@ class EngagementController extends Controller
             'send_immediately' => 'nullable|boolean',
         ]);
         
+        Log::info('Form data received', [
+            'title' => $data['title'] ?? null,
+            'message' => $data['message'] ?? null,
+            'url' => $data['url'] ?? 'NOT PROVIDED',
+            'has_icon' => $request->hasFile('icon'),
+        ]);
+        
         // Get all push subscriptions for this site
         $subscriptions = $site->pushSubscriptions;
         
