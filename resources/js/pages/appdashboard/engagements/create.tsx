@@ -29,23 +29,15 @@ export default function EngagementCreate() {
     title: string;
     message: string;
     url: string;
-    icon: File | null;
     audience: string;
     send_immediately: boolean;
   }>({
     title: '',
     message: '',
     url: '',
-    icon: null,
     audience: 'all',
     send_immediately: true,
   });
-
-  const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setData('icon', e.target.files[0]);
-    }
-  };
 
   const handleNext = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const handlePrev = () => setStep((s) => Math.max(s - 1, 0));
@@ -59,7 +51,8 @@ export default function EngagementCreate() {
   };
 
   // --- PREVIEW CARDS ---
-  const iconUrl = data.icon ? URL.createObjectURL(data.icon) : '/images/rocket.png';
+  const siteIconUrl = site?.notification_icon_url || site?.badge_icon_url || siteUrl + '/notix.jpg';
+  const iconUrl = siteIconUrl;
   const previewTitle = data.title || 'Sample notification title!';
   const previewMsg = data.message || 'Sample notification message!!';
   const previewUrl = data.url || siteUrl;
@@ -127,12 +120,18 @@ export default function EngagementCreate() {
                     <p className="text-xs text-gray-500 mt-1">Leave empty to use site URL: {siteUrl}</p>
                   </div>
                   <div>
-                    <label className="block font-semibold mb-1">Notification Icon Url</label>
-                    <input type="file" accept="image/*" className="block file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all" onChange={handleIconChange} />
-                    <p className="text-xs text-gray-500 mt-1">Use a square image (e.g., 192x192px), JPG, PNG, GIF, WEBP, AVIF, or SVG, up to 2MB. Animations not supported.</p>
-                    <div className="mt-2 flex items-center gap-2">
-                      <img src={iconUrl} alt="icon preview" className="w-16 h-16 rounded-full object-cover border" />
-                      {data.icon && <Button size="sm" type="button" onClick={() => setData('icon', null)}>Remove</Button>}
+                    <label className="block font-semibold mb-1">Notification Icon</label>
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded border">
+                      <img src={iconUrl} alt="Site icon" className="w-12 h-12 rounded-full object-cover border-2 border-gray-200" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-700">Using your site's configured icon</p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          To change this icon, go to{' '}
+                          <Link href={`/sites/${site.id}/config`} className="text-blue-600 hover:underline">
+                            Site Configuration
+                          </Link>
+                        </p>
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-col gap-4">
