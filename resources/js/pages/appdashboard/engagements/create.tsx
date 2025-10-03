@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import AppDashboardSidebar from '@/components/appdashboard-sidebar';
 import { AppShell } from '@/components/app-shell';
@@ -13,10 +13,16 @@ const steps = [
 ];
 
 export default function EngagementCreate() {
+  const { site } = usePage().props as any;
+  
+  const siteName = site?.site_name || 'Your Site';
+  const siteUrl = site?.site_url || 'https://yoursite.com';
+  const siteDomain = siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('Sample notification title!');
   const [message, setMessage] = useState('Sample notification message!!');
-  const [url, setUrl] = useState('https://thedevelopershouse.com');
+  const [url, setUrl] = useState(siteUrl);
   const [icon, setIcon] = useState<File | null>(null);
   const [showLargeImage, setShowLargeImage] = useState(false);
   const [addActionButtons, setAddActionButtons] = useState(false);
@@ -38,7 +44,7 @@ export default function EngagementCreate() {
   const iconUrl = icon ? URL.createObjectURL(icon) : '/images/rocket.png';
   const previewTitle = title || 'Sample notification title!';
   const previewMsg = message || 'Sample notification message!!';
-  const previewUrl = url || 'thedevelopershouse.com';
+  const previewUrlDisplay = url ? url.replace(/^https?:\/\//, '').replace(/\/$/, '') : siteDomain;
 
   return (
     <AppShell variant="sidebar">
@@ -187,7 +193,7 @@ export default function EngagementCreate() {
                   <div>
                     <div className="font-bold">{previewTitle}</div>
                     <div className="text-gray-600 text-sm">{previewMsg}</div>
-                    <div className="text-xs text-gray-400 mt-1">{previewUrl}</div>
+                    <div className="text-xs text-gray-400 mt-1">{previewUrlDisplay}</div>
                   </div>
                 </div>
               </div>
@@ -198,7 +204,7 @@ export default function EngagementCreate() {
                   <div>
                     <div className="font-bold">{previewTitle}</div>
                     <div className="text-gray-600 text-sm">{previewMsg}</div>
-                    <div className="text-xs text-gray-400 mt-1">{previewUrl}</div>
+                    <div className="text-xs text-gray-400 mt-1">{previewUrlDisplay}</div>
                   </div>
                 </div>
               </div>
@@ -208,7 +214,7 @@ export default function EngagementCreate() {
                   <img src={iconUrl} alt="icon" className="w-12 h-12 rounded-full object-cover" />
                   <div>
                     <div className="font-bold text-white">{previewTitle}</div>
-                    <div className="text-gray-200 text-sm">from thedevelopershouse</div>
+                    <div className="text-gray-200 text-sm">from {siteName}</div>
                     <div className="text-gray-200 text-sm">{previewMsg}</div>
                   </div>
                   <div className="ml-auto text-xs text-white">now</div>
@@ -220,7 +226,7 @@ export default function EngagementCreate() {
                   <img src={iconUrl} alt="icon" className="w-12 h-12 rounded-full object-cover" />
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold">thedevelopershouse</span>
+                      <span className="font-bold">{siteName}</span>
                       <span className="text-xs text-gray-400">· now</span>
                     </div>
                     <div className="font-bold">{previewTitle}</div>

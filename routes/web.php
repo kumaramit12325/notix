@@ -225,6 +225,11 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
         Route::post('/config', [\App\Http\Controllers\User\SiteConfigController::class, 'update'])->name('site.config.update');
         Route::get('/subscribers', [SubscriberController::class, 'index'])->name('site.subscribers');
         Route::get('/setup', [\App\Http\Controllers\User\SiteSetupController::class, 'index'])->name('site.setup');
+        
+        // Site-specific engagement (notifications) routes
+        Route::get('/engagements', [EngagementController::class, 'index'])->name('site.engagements.index');
+        Route::get('/engagements/create', [EngagementController::class, 'create'])->name('site.engagements.create');
+        Route::post('/engagements', [EngagementController::class, 'store'])->name('site.engagements.store');
     });
     
     // User YouTube routes - users can manage their own channels
@@ -301,7 +306,6 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     ////////// app dashboard route
     Route::get('appdashboard/dashboard', [DashboardController::class, 'index'])->name('appdashboard.dashboard');
     // Segmentation routes
-    Route::resource('appdashboard/engagements', EngagementController::class); // includes POST /appdashboard/engagements for store
     Route::resource('appdashboard/autoresponder', AutoresponderController::class);
     Route::resource('appdashboard/template', TemplateController::class);
     Route::get('appdashboard/segment', [SegmentController::class, 'index'])->name('appdashboard.segment');
