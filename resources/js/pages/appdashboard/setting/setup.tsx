@@ -9,9 +9,9 @@ type TabKey = 'manual' | 'blogger' | 'weebly' | 'opencart' | 'woocommerce' | 'cs
 
 export default function SetupPage() {
   const [active, setActive] = useState<TabKey>('manual');
-  const { app, settings } = usePage().props as any;
+  const { app, settings, site } = usePage().props as any;
 
-  const appId = app?.id ?? settings?.appId ?? '68ad989dc0bc002e7cb10ce1';
+  const appId = app?.appId ?? settings?.appId ?? '68ad989dc0bc002e7cb10ce1';
   const publicKey = app?.publicKey ?? settings?.publicKey ?? 'BNX2qeX9b24FwWMgXPczMQGMqiXQUZ-fPGL9xsXJUUp_mbI8dKxgQbRdK5ZvGdKUD9G7BP4YY_sJ0WsSm4z03aE';
 
   const codeSnippet = `\

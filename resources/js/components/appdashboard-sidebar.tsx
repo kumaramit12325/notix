@@ -4,10 +4,10 @@ import { Link, usePage } from '@inertiajs/react';
 import AppLogo from './app-logo';
 import { useState } from 'react';
 
-const customNavItems = [
+const getCustomNavItems = (siteId?: number) => [
   {
     title: 'App Dashboard',
-    href: '/appdashboard/dashboard',
+    href: siteId ? `/sites/${siteId}/dashboard` : '/appdashboard/dashboard',
     icon: LayoutGrid,
   },
   {
@@ -79,12 +79,16 @@ const customNavItems = [
         },
         {
             title: 'Site Config',
-            href: '/appdashboard/site-config',
+            href: siteId ? `/sites/${siteId}/config` : '/appdashboard/site-config',
         },
         {
             title: 'Installation',
-            href: '/appdashboard/setup',
+            href: siteId ? `/sites/${siteId}/setup` : '/appdashboard/setup',
         },
+        ...(siteId ? [{
+            title: 'Subscribers',
+            href: `/sites/${siteId}/subscribers`,
+        }] : []),
       
     ]
 },
@@ -93,8 +97,12 @@ const customNavItems = [
 
 export function AppDashboardSidebar() {
   // Open dropdown if any subitem is active by default
-  const { url } = usePage();
+  const { url, props } = usePage();
   const currentPath = url;
+  const site = (props as any).site;
+  const siteId = site?.id;
+  
+  const customNavItems = getCustomNavItems(siteId);
   const getActiveDropdown = () => {
     const activeDropdown = customNavItems.find(
       (item) => item.items && item.items.some((sub) => currentPath.startsWith(sub.href))
