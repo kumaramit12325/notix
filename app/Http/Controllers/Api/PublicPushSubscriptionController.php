@@ -21,14 +21,16 @@ class PublicPushSubscriptionController extends Controller
         $appId = $request->app_id;
         $parts = explode('-', $appId, 2);
         
-        if (count($parts) < 1) {
+        if (count($parts) < 2) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid app_id format'
+                'message' => 'Invalid app_id format. Expected format: siteId-token'
             ], 400);
         }
         
         $siteId = $parts[0];
+        $token = $parts[1];
+        
         $site = UserSite::find($siteId);
         
         if (!$site) {
@@ -36,6 +38,13 @@ class PublicPushSubscriptionController extends Controller
                 'success' => false,
                 'message' => 'Site not found'
             ], 404);
+        }
+        
+        if ($site->script_token !== $token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid site token'
+            ], 403);
         }
         
         $existingSubscription = DB::table('push_subscriptions')
@@ -74,8 +83,38 @@ class PublicPushSubscriptionController extends Controller
             'endpoint' => 'required|string'
         ]);
         
+        $appId = $request->app_id;
+        $parts = explode('-', $appId, 2);
+        
+        if (count($parts) < 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid app_id format. Expected format: siteId-token'
+            ], 400);
+        }
+        
+        $siteId = $parts[0];
+        $token = $parts[1];
+        
+        $site = UserSite::find($siteId);
+        
+        if (!$site) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Site not found'
+            ], 404);
+        }
+        
+        if ($site->script_token !== $token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid site token'
+            ], 403);
+        }
+        
         DB::table('push_subscriptions')
             ->where('endpoint', $request->endpoint)
+            ->where('user_site_id', $site->id)
             ->delete();
         
         return response()->json([
