@@ -224,6 +224,7 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
         Route::get('/config', [\App\Http\Controllers\User\SiteConfigController::class, 'index'])->name('site.config');
         Route::post('/config', [\App\Http\Controllers\User\SiteConfigController::class, 'update'])->name('site.config.update');
         Route::get('/subscribers', [SubscriberController::class, 'index'])->name('site.subscribers');
+        Route::get('/setup', [\App\Http\Controllers\User\SiteSetupController::class, 'index'])->name('site.setup');
     });
     
     // User YouTube routes - users can manage their own channels

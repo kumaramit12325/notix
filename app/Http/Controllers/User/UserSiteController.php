@@ -127,6 +127,7 @@ class UserSiteController extends Controller
             $siteData = [
                 'site_name' => $validated['site_name'] ?? $validated['siteName'] ?? '',
                 'site_url' => $validated['site_url'] ?? $validated['siteUrl'] ?? '',
+                'script_token' => \Illuminate\Support\Str::random(32),
                 'badge_icon_url' => $validated['badge_icon_url'] ?? $validated['badgeIconUrl'] ?? null,
                 'notification_icon_url' => $validated['notification_icon_url'] ?? $validated['notificationIconUrl'] ?? null,
                 'status' => $validated['status'] ?? 'Active',

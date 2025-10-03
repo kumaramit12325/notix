@@ -15,16 +15,21 @@ class UserSite extends Model
         'user_id',
         'site_name',
         'site_url',
+        'script_token',
         'badge_icon_url',
         'notification_icon_url',
         'status',
         'is_connected',
         'clicks',
         'conversions',
+        'remove_powered_by',
+        'universal_subscription_link',
     ];
 
     protected $casts = [
         'is_connected' => 'boolean',
+        'remove_powered_by' => 'boolean',
+        'universal_subscription_link' => 'boolean',
         'clicks' => 'integer',
         'conversions' => 'integer',
     ];
