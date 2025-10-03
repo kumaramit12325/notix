@@ -59,12 +59,9 @@
         if ('Notification' in window) {
           if (Notification.permission === 'granted') {
             subscribeToPush(registration);
-          } else if (Notification.permission === 'default') {
-            // Automatically request permission for new visitors
-            setTimeout(function() {
-              alertwise.requestPermission();
-            }, 1000);
           }
+          // Safari requires user interaction - don't auto-request
+          // Permission must be requested via button click: alertwise.requestPermission()
         }
       })
       .catch(function(error) {
@@ -146,7 +143,15 @@
       return Promise.reject(new Error('Notifications not supported'));
     }
 
+    // Detect Safari
+    var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isSafari) {
+      console.log('Safari detected - requesting permission from user gesture');
+    }
+
     return Notification.requestPermission().then(function(permission) {
+      console.log('Notification permission result:', permission);
+      
       if (permission === 'granted') {
         console.log('Notification permission granted');
         if ('serviceWorker' in navigator) {
@@ -154,10 +159,15 @@
             subscribeToPush(registration);
           });
         }
+      } else if (permission === 'denied') {
+        console.warn('Notification permission denied - check browser settings');
       } else {
-        console.log('Notification permission denied');
+        console.log('Notification permission dismissed');
       }
       return permission;
+    }).catch(function(error) {
+      console.error('Error requesting notification permission:', error);
+      throw error;
     });
   };
 
