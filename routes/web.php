@@ -230,6 +230,9 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
         Route::get('/engagements', [EngagementController::class, 'index'])->name('site.engagements.index');
         Route::get('/engagements/create', [EngagementController::class, 'create'])->name('site.engagements.create');
         Route::post('/engagements', [EngagementController::class, 'store'])->name('site.engagements.store');
+        
+        // Site-specific segments routes
+        Route::get('/segments', [\App\Http\Controllers\User\appdashboard\SegmentController::class, 'index'])->name('site.segments.index');
     });
     
     // User YouTube routes - users can manage their own channels
