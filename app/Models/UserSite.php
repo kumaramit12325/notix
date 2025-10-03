@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
+use NotificationChannels\WebPush\HasPushSubscriptions;
 
 class UserSite extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable, HasPushSubscriptions;
 
     protected $fillable = [
         'user_id',
@@ -41,14 +42,6 @@ class UserSite extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get all push subscriptions for this site.
-     */
-    public function pushSubscriptions(): HasMany
-    {
-        return $this->hasMany(\NotificationChannels\WebPush\PushSubscription::class, 'user_site_id');
     }
 
     /**

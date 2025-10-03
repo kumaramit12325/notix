@@ -71,25 +71,18 @@ class EngagementController extends Controller
             'badge' => $site->badge_icon_url ?? '/notix.jpg',
         ];
         
-        $sentCount = 0;
-        $failedCount = 0;
-        
-        // Get unique users from subscriptions and send notifications
-        $users = $subscriptions->map(function ($subscription) {
-            return $subscription->subscribable;
-        })->unique('id')->filter();
-        
-        foreach ($users as $user) {
-            try {
-                $user->notify(new \App\Notifications\PushNotification($notificationData));
-                $sentCount++;
-            } catch (\Exception $e) {
-                $failedCount++;
-                \Log::error('Failed to send push notification: ' . $e->getMessage());
-            }
+        // Send notification to the site (which has push subscriptions)
+        try {
+            $site->notify(new \App\Notifications\PushNotification($notificationData));
+            $sentCount = $subscriptions->count();
+            
+            return redirect()->route('site.dashboard', ['site' => $siteId])
+                ->with('success', "Push notification sent to {$sentCount} subscribers!");
+        } catch (\Exception $e) {
+            Log::error('Failed to send push notification: ' . $e->getMessage());
+            
+            return redirect()->route('site.dashboard', ['site' => $siteId])
+                ->with('error', 'Failed to send push notification: ' . $e->getMessage());
         }
-        
-        return redirect()->route('site.dashboard', ['site' => $siteId])
-            ->with('success', "Push notification sent to {$sentCount} users!" . ($failedCount > 0 ? " ({$failedCount} failed)" : ''));
     }
 }
