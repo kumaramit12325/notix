@@ -9,19 +9,20 @@ type TabKey = 'manual' | 'blogger' | 'weebly' | 'opencart' | 'woocommerce' | 'cs
 
 export default function SetupPage() {
   const [active, setActive] = useState<TabKey>('manual');
-  const { app, settings, site } = usePage().props as any;
+  const { app, settings, site, appUrl } = usePage().props as any;
 
-  const appId = app?.appId ?? settings?.appId ?? '68ad989dc0bc002e7cb10ce1';
-  const publicKey = app?.publicKey ?? settings?.publicKey ?? 'BNX2qeX9b24FwWMgXPczMQGMqiXQUZ-fPGL9xsXJUUp_mbI8dKxgQbRdK5ZvGdKUD9G7BP4YY_sJ0WsSm4z03aE';
+  const appId = app?.appId ?? settings?.appId ?? 'MISSING-APP-ID';
+  const publicKey = app?.publicKey ?? settings?.publicKey ?? 'MISSING-PUBLIC-KEY';
+  const apiUrl = appUrl || window.location.origin;
 
   const codeSnippet = `\
-<script src="https://cdn.alertwise.net/${appId}/integrate/alert-wise.js"></script>\n\
+<script src="${apiUrl}/js/alertwise.js"></script>\n\
 <script type="text/javascript">\n\
   alertwise = window.alertwise || [];\n\
   alertwise.push(['init', {\n\
     appId: '${appId}',\n\
-    alertwiseApiUrl: 'https://api.alertwise.net',\n\
-    applicationServerPublicKey: '${publicKey}'\n\
+    apiUrl: '${apiUrl}',\n\
+    publicKey: '${publicKey}'\n\
   }]);\n\
 </script>`;
 
@@ -34,7 +35,7 @@ export default function SetupPage() {
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#3b82f6" strokeWidth="2"/><text x="12" y="16" textAnchor="middle" fontSize="12" fill="#3b82f6" fontFamily="Arial" dy="-2">i</text></svg>
             </span>
           </h1>
-          <div className="mt-2 text-gray-700 font-medium">thedevelopershouse</div>
+          <div className="mt-2 text-gray-700 font-medium">{site?.site_name || 'Your Site'}</div>
         </div>
         <div className="text-sm"><span className="font-semibold text-green-700">APP ID</span> : {appId}</div>
       </div>
