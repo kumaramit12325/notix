@@ -56,7 +56,8 @@ export function UserSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcru
     // Find current dashboard label - improved detection
     const getCurrentDashboard = () => {
         if (currentUrl.startsWith('/sites/')) {
-            return 'App Dashboard';
+            const siteName = (site as any)?.site_name;
+            return siteName ? `App Dashboard - ${siteName}` : 'App Dashboard';
         } else if (currentUrl.startsWith('/user-dashboard')) {
             return 'User Dashboard';
         }
