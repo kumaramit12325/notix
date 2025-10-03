@@ -191,8 +191,30 @@
             publicKey: 'BO0bf2s6mmC3xh8z39weji2Alatt7fRjtasavfhUyp_QMDYuCOe0UnQs_yUC7nX2gHd8919s563PYPzjIIopaww'
         }]);
         
-        // Check notification permission
-        if ('Notification' in window) {
+        // Detect iOS and check if running as PWA
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                            window.navigator.standalone === true;
+        
+        if (isIOS && !isStandalone) {
+            updateStatus('📱 On iPhone: You must add this app to your Home Screen first!', 'error');
+            subscribeBtn.textContent = '📱 Add to Home Screen Required';
+            subscribeBtn.disabled = true;
+            log('iOS detected - PWA installation required');
+            
+            // Show iOS installation instructions
+            const infoBox = document.querySelector('.info-box');
+            infoBox.innerHTML = `
+                <h3>📱 iPhone Installation Steps:</h3>
+                <p>
+                    1. Tap the <strong>Share</strong> button (square with arrow)<br>
+                    2. Scroll down and tap <strong>"Add to Home Screen"</strong><br>
+                    3. Tap <strong>"Add"</strong> in the top right<br>
+                    4. Open the app from your <strong>Home Screen</strong><br>
+                    5. Then click "Enable Notifications"
+                </p>
+            `;
+        } else if ('Notification' in window) {
             if (Notification.permission === 'granted') {
                 updateStatus('✅ Notifications are enabled!', 'success');
                 subscribeBtn.textContent = '✅ Notifications Enabled';
