@@ -35,7 +35,7 @@ export default function EngagementCreate() {
   }>({
     title: '',
     message: '',
-    url: siteUrl,
+    url: '',
     icon: null,
     audience: 'all',
     send_immediately: true,
@@ -62,7 +62,8 @@ export default function EngagementCreate() {
   const iconUrl = data.icon ? URL.createObjectURL(data.icon) : '/images/rocket.png';
   const previewTitle = data.title || 'Sample notification title!';
   const previewMsg = data.message || 'Sample notification message!!';
-  const previewUrlDisplay = data.url ? data.url.replace(/^https?:\/\//, '').replace(/\/$/, '') : siteDomain;
+  const previewUrl = data.url || siteUrl;
+  const previewUrlDisplay = previewUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
   return (
     <AppShell variant="sidebar">
@@ -116,7 +117,14 @@ export default function EngagementCreate() {
                   </div>
                   <div>
                     <label className="block font-semibold mb-1">Notification Url</label>
-                    <input type="url" className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all" value={data.url} onChange={e => setData('url', e.target.value)} />
+                    <input 
+                      type="url" 
+                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all" 
+                      value={data.url} 
+                      onChange={e => setData('url', e.target.value)}
+                      placeholder={siteUrl}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Leave empty to use site URL: {siteUrl}</p>
                   </div>
                   <div>
                     <label className="block font-semibold mb-1">Notification Icon Url</label>
