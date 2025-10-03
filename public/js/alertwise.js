@@ -59,9 +59,20 @@
         if ('Notification' in window) {
           if (Notification.permission === 'granted') {
             subscribeToPush(registration);
+          } else if (Notification.permission === 'default') {
+            // Detect Safari (which blocks auto-prompts)
+            var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            
+            if (!isSafari) {
+              // Auto-request for Chrome, Firefox, Edge after 1 second
+              setTimeout(function() {
+                console.log('Auto-requesting notification permission...');
+                alertwise.requestPermission();
+              }, 1000);
+            } else {
+              console.log('Safari detected - permission must be requested via user click');
+            }
           }
-          // Safari requires user interaction - don't auto-request
-          // Permission must be requested via button click: alertwise.requestPermission()
         }
       })
       .catch(function(error) {
