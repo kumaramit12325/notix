@@ -20,30 +20,22 @@ export default function EngagementCreate() {
   const siteDomain = siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
   
   const [step, setStep] = useState(0);
-  const [title, setTitle] = useState('Sample notification title!');
-  const [message, setMessage] = useState('Sample notification message!!');
-  const [url, setUrl] = useState(siteUrl);
-  const [icon, setIcon] = useState<File | null>(null);
   const [showLargeImage, setShowLargeImage] = useState(false);
   const [addActionButtons, setAddActionButtons] = useState(false);
   const [notificationDuration, setNotificationDuration] = useState(false);
   const [utmParameters, setUtmParameters] = useState(false);
-  const [sendImmediately, setSendImmediately] = useState(true);
 
-  const [audience, setAudience] = useState('all');
-  
   const { data, setData, post, processing } = useForm({
-    title: title,
-    message: message,
-    url: url,
-    icon: icon,
-    audience: audience,
+    title: '',
+    message: '',
+    url: siteUrl,
+    icon: null,
+    audience: 'all',
     send_immediately: true,
   });
 
   const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setIcon(e.target.files[0]);
       setData('icon', e.target.files[0]);
     }
   };
@@ -52,15 +44,6 @@ export default function EngagementCreate() {
   const handlePrev = () => setStep((s) => Math.max(s - 1, 0));
   
   const handleSendNow = () => {
-    setData({
-      title,
-      message,
-      url,
-      icon,
-      audience,
-      send_immediately: sendImmediately,
-    });
-    
     post(`/sites/${site.id}/engagements`, {
       onSuccess: () => {
         router.visit(`/sites/${site.id}/dashboard`);
@@ -69,10 +52,10 @@ export default function EngagementCreate() {
   };
 
   // --- PREVIEW CARDS ---
-  const iconUrl = icon ? URL.createObjectURL(icon) : '/images/rocket.png';
-  const previewTitle = title || 'Sample notification title!';
-  const previewMsg = message || 'Sample notification message!!';
-  const previewUrlDisplay = url ? url.replace(/^https?:\/\//, '').replace(/\/$/, '') : siteDomain;
+  const iconUrl = data.icon ? URL.createObjectURL(data.icon) : '/images/rocket.png';
+  const previewTitle = data.title || 'Sample notification title!';
+  const previewMsg = data.message || 'Sample notification message!!';
+  const previewUrlDisplay = data.url ? data.url.replace(/^https?:\/\//, '').replace(/\/$/, '') : siteDomain;
 
   return (
     <AppShell variant="sidebar">
@@ -113,20 +96,20 @@ export default function EngagementCreate() {
                   <div>
                     <label className="block font-semibold mb-1">Notification Title</label>
                     <div className="flex items-center gap-2">
-                      <input type="text" className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all" value={title} onChange={e => setTitle(e.target.value)} maxLength={60} required />
-                      <span className="text-xs text-gray-500">{title.length} / 60</span>
+                      <input type="text" className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all" value={data.title} onChange={e => setData('title', e.target.value)} maxLength={60} required />
+                      <span className="text-xs text-gray-500">{data.title.length} / 60</span>
                     </div>
                   </div>
                   <div>
                     <label className="block font-semibold mb-1">Notification Message</label>
                     <div className="flex items-center gap-2">
-                      <textarea className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all" value={message} onChange={e => setMessage(e.target.value)} maxLength={120} required />
-                      <span className="text-xs text-gray-500">{message.length} / 120</span>
+                      <textarea className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all" value={data.message} onChange={e => setData('message', e.target.value)} maxLength={120} required />
+                      <span className="text-xs text-gray-500">{data.message.length} / 120</span>
                     </div>
                   </div>
                   <div>
                     <label className="block font-semibold mb-1">Notification Url</label>
-                    <input type="url" className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all" value={url} onChange={e => setUrl(e.target.value)} />
+                    <input type="url" className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all" value={data.url} onChange={e => setData('url', e.target.value)} />
                   </div>
                   <div>
                     <label className="block font-semibold mb-1">Notification Icon Url</label>
@@ -134,7 +117,7 @@ export default function EngagementCreate() {
                     <p className="text-xs text-gray-500 mt-1">Use a square image (e.g., 192x192px), JPG, PNG, GIF, WEBP, AVIF, or SVG, up to 2MB. Animations not supported.</p>
                     <div className="mt-2 flex items-center gap-2">
                       <img src={iconUrl} alt="icon preview" className="w-16 h-16 rounded-full object-cover border" />
-                      {icon && <Button size="sm" type="button" onClick={() => setIcon(null)}>Remove</Button>}
+                      {data.icon && <Button size="sm" type="button" onClick={() => setData('icon', null)}>Remove</Button>}
                     </div>
                   </div>
                   <div className="flex flex-col gap-4">
@@ -158,7 +141,7 @@ export default function EngagementCreate() {
                   </div>
                   {/* --- BUTTONS POLISH --- */}
                   <div className="flex justify-end mt-8">
-                    <Button type="button" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow transition-all w-full disabled:opacity-60 disabled:cursor-not-allowed" onClick={handleNext} disabled={!title || !message}>Select Audience &rarr;</Button>
+                    <Button type="button" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow transition-all w-full disabled:opacity-60 disabled:cursor-not-allowed" onClick={handleNext} disabled={!data.title || !data.message}>Select Audience &rarr;</Button>
                   </div>
                 </form>
               )}
@@ -167,17 +150,17 @@ export default function EngagementCreate() {
                   <div className="font-semibold text-lg mb-2">Select Audience</div>
                   <div className="flex flex-col gap-4">
                     <label className="flex items-center gap-2 border rounded px-4 py-3 cursor-pointer">
-                      <input type="radio" name="audience" checked={audience === 'all'} onChange={() => setAudience('all')} />
+                      <input type="radio" name="audience" checked={data.audience === 'all'} onChange={() => setData('audience', 'all')} />
                       <span>Send to All Subscribers</span>
                       <span className="text-xs text-gray-500 ml-2">This message will be sent to all subscribers.</span>
                     </label>
                     <label className="flex items-center gap-2 border rounded px-4 py-3 cursor-pointer">
-                      <input type="radio" name="audience" checked={audience === 'group'} onChange={() => setAudience('group')} />
+                      <input type="radio" name="audience" checked={data.audience === 'group'} onChange={() => setData('audience', 'group')} />
                       <span>Send to Audience Group</span>
                       <span className="text-xs text-gray-500 ml-2">Customize your notification for a targeted audience group.</span>
                     </label>
                     <label className="flex items-center gap-2 border rounded px-4 py-3 cursor-pointer">
-                      <input type="radio" name="audience" checked={audience === 'custom'} onChange={() => setAudience('custom')} />
+                      <input type="radio" name="audience" checked={data.audience === 'custom'} onChange={() => setData('audience', 'custom')} />
                       <span>Send to Custom Audience</span>
                       <span className="text-xs text-gray-500 ml-2">Customize notifications using segments, geolocation, device, and more.</span>
                     </label>
@@ -197,8 +180,8 @@ export default function EngagementCreate() {
                       <input 
                         type="radio" 
                         name="schedule" 
-                        checked={sendImmediately}
-                        onChange={() => setSendImmediately(true)}
+                        checked={data.send_immediately}
+                        onChange={() => setData('send_immediately', true)}
                       />
                       <span>Begin sending immediately</span>
                     </label>
@@ -206,8 +189,8 @@ export default function EngagementCreate() {
                       <input 
                         type="radio" 
                         name="schedule" 
-                        checked={!sendImmediately}
-                        onChange={() => setSendImmediately(false)}
+                        checked={!data.send_immediately}
+                        onChange={() => setData('send_immediately', false)}
                       />
                       <span>Begin sending at a particular day and time</span>
                     </label>
