@@ -1,22 +1,28 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import AppDashboardSidebar from '@/components/appdashboard-sidebar';
 import { AppShell } from '@/components/app-shell';
 import { AppContent } from '@/components/app-content';
 import { UserSidebarHeader } from '@/components/user-sidebar-header';
-import { Link } from '@inertiajs/react';
 
 export default function EngagementsIndex() {
+  const { site } = usePage().props as any;
+  
   return (
     <AppShell variant="sidebar">
       <AppDashboardSidebar />
       <AppContent variant="sidebar" className="overflow-x-hidden">
-        <UserSidebarHeader breadcrumbs={[{ title: 'App Dashboard', href: '/user/appdashboard/dashboard' }]} />
-        <Head title="Engagements" />
+        <UserSidebarHeader breadcrumbs={[
+          { title: 'Push Notifications', href: `/sites/${site?.id}/engagements` }
+        ]} />
+        <Head title="Push Notifications" />
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Push Notification <span className="inline-block align-middle text-blue-500" title="Engagements Info">&#9432;</span></h1>
-            <Link href="/appdashboard/engagements/create">
+            <div>
+              <h1 className="text-3xl font-bold">Push Notification <span className="inline-block align-middle text-blue-500" title="Engagements Info">&#9432;</span></h1>
+              <p className="text-sm text-gray-600 mt-1">{site?.site_name} - Manage push notifications</p>
+            </div>
+            <Link href={`/sites/${site?.id}/engagements/create`}>
               <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded flex items-center gap-2">
                 <span className="text-lg">&#8853;</span> New Push Notification
               </Button>
