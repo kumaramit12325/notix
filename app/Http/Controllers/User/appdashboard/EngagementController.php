@@ -49,7 +49,6 @@ class EngagementController extends Controller
             'title' => 'required|string|max:255',
             'message' => 'required|string|max:500',
             'url' => 'nullable|url',
-            'icon' => 'nullable|image|max:2048',
             'audience' => 'nullable|string',
             'send_immediately' => 'nullable|boolean',
         ]);
@@ -57,8 +56,7 @@ class EngagementController extends Controller
         Log::info('Form data received', [
             'title' => $data['title'] ?? null,
             'message' => $data['message'] ?? null,
-            'url' => $data['url'] ?? 'NOT PROVIDED',
-            'has_icon' => $request->hasFile('icon'),
+            'url' => $data['url'] ?? $site->site_url,
         ]);
         
         // Get all push subscriptions for this site
@@ -69,22 +67,17 @@ class EngagementController extends Controller
                 ->with('error', 'No subscribers found for this site.');
         }
         
-        // Handle uploaded icon
-        $appUrl = config('app.url');
-        $iconUrl = $site->notification_icon_url ?? $appUrl . '/notix.jpg';
+        // Use site's configured icons (from same domain to avoid cross-origin issues)
+        $iconUrl = $site->notification_icon_url ?? $site->badge_icon_url ?? $site->site_url . '/notix.jpg';
+        $badgeUrl = $site->badge_icon_url ?? $site->site_url . '/notix.jpg';
         
-        if ($request->hasFile('icon')) {
-            $iconPath = $request->file('icon')->store('notification-icons', 'public');
-            $iconUrl = $appUrl . '/storage/' . $iconPath;
-        }
-        
-        // Prepare notification data with absolute URLs
+        // Prepare notification data
         $notificationData = [
             'title' => $data['title'],
             'body' => $data['message'],
             'icon' => $iconUrl,
             'url' => $data['url'] ?? $site->site_url,
-            'badge' => $site->badge_icon_url ?? $appUrl . '/notix.jpg',
+            'badge' => $badgeUrl,
         ];
         
         // Send notification to the site (which has push subscriptions)
