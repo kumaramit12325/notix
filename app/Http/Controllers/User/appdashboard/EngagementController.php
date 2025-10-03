@@ -67,9 +67,15 @@ class EngagementController extends Controller
                 ->with('error', 'No subscribers found for this site.');
         }
         
-        // Use site's configured icons (from same domain to avoid cross-origin issues)
-        $iconUrl = $site->notification_icon_url ?? $site->badge_icon_url ?? $site->site_url . '/notix.jpg';
-        $badgeUrl = $site->badge_icon_url ?? $site->site_url . '/notix.jpg';
+        // Determine icon URLs - use only site-configured icons for same-origin compatibility
+        $iconUrl = $site->notification_icon_url ?? $site->badge_icon_url;
+        $badgeUrl = $site->badge_icon_url;
+        
+        // Require at least badge icon to be configured for production compatibility
+        if (!$iconUrl || !$badgeUrl) {
+            return redirect()->route('site.config', ['site' => $siteId])
+                ->with('error', 'Please configure notification icons in Site Configuration before sending notifications. This ensures icons work correctly on your live website.');
+        }
         
         // Prepare notification data
         $notificationData = [

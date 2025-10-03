@@ -124,13 +124,27 @@ export default function EngagementCreate() {
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded border">
                       <img src={iconUrl} alt="Site icon" className="w-12 h-12 rounded-full object-cover border-2 border-gray-200" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-700">Using your site's configured icon</p>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          To change this icon, go to{' '}
-                          <Link href={`/sites/${site.id}/config`} className="text-blue-600 hover:underline">
-                            Site Configuration
-                          </Link>
-                        </p>
+                        {(site?.notification_icon_url || site?.badge_icon_url) ? (
+                          <>
+                            <p className="text-sm font-medium text-gray-700">Using your site's configured icon</p>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              To change this icon, go to{' '}
+                              <Link href={`/sites/${site.id}/config`} className="text-blue-600 hover:underline">
+                                Site Configuration
+                              </Link>
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-sm font-medium text-orange-700">⚠️ No icon configured - using default</p>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              For best results, configure your site icon in{' '}
+                              <Link href={`/sites/${site.id}/config`} className="text-blue-600 hover:underline">
+                                Site Configuration
+                              </Link>
+                            </p>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
