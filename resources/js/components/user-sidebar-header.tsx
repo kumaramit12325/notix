@@ -13,10 +13,11 @@ import clsx from 'clsx';
 
 export function UserSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: BreadcrumbItemType[] }) {
     const { appearance, updateAppearance } = useAppearance();
-    const { auth } = usePage<SharedData>().props;
+    const { auth, site } = usePage<SharedData>().props;
     const user = auth?.user;
     const page = useInertiaPage();
     const currentUrl = page.url;
+    const siteId = (site as any)?.id;
 
     // Get user initials for avatar
     const getUserInitials = () => {
@@ -40,11 +41,11 @@ export function UserSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcru
         updateAppearance(nextTheme);
     };
 
-    // Dropdown links
+    // Dropdown links - Make App Dashboard site-specific if we have a siteId
     const dashboards = [
         {
             label: 'App Dashboard',
-            href: '/appdashboard/dashboard',
+            href: siteId ? `/sites/${siteId}/dashboard` : '/user-dashboard',
         },
         {
             label: 'User Dashboard',
@@ -52,8 +53,17 @@ export function UserSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcru
         },
     ];
 
-    // Find current dashboard label
-    const currentDashboard = dashboards.find(d => d.href === currentUrl)?.label || 'Select Dashboard';
+    // Find current dashboard label - improved detection
+    const getCurrentDashboard = () => {
+        if (currentUrl.startsWith('/sites/')) {
+            return 'App Dashboard';
+        } else if (currentUrl.startsWith('/user-dashboard')) {
+            return 'User Dashboard';
+        }
+        return 'User Dashboard';
+    };
+    
+    const currentDashboard = getCurrentDashboard();
 
     return (
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border/50 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4 bg-white">
