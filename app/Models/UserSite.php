@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UserSite extends Model
 {
@@ -40,6 +41,14 @@ class UserSite extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get all push subscriptions for this site.
+     */
+    public function pushSubscriptions(): HasMany
+    {
+        return $this->hasMany(\NotificationChannels\WebPush\PushSubscription::class, 'user_site_id');
     }
 
     /**
