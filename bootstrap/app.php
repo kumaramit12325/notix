@@ -21,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: [
             'push-subscriptions/*',
+            'api/push-subscribe',
+            'api/push-unsubscribe',
+            'api/vapid-public-key',
         ]);
 
         $middleware->alias([
