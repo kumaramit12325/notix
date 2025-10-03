@@ -17,7 +17,7 @@ const getCustomNavItems = (siteId?: number) => [
     items: [
         {
             title: 'Push Notification',
-            href: '/appdashboard/engagements',
+            href: siteId ? `/sites/${siteId}/engagements/create` : '/appdashboard/engagements',
         },
         {
             title: 'Push Autoresponder',
@@ -40,11 +40,11 @@ const getCustomNavItems = (siteId?: number) => [
     items: [
         {
             title: 'Segments',
-            href: '/appdashboard/segment',
+            href: siteId ? `/sites/${siteId}/segments` : '/appdashboard/segment',
         },
         {
             title: 'Audiences',
-            href: '/appdashboard/audience',
+            href: siteId ? `/sites/${siteId}/audiences` : '/appdashboard/audience',
         },
         {
             title: 'Attributes',
