@@ -233,6 +233,12 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
         
         // Site-specific segments routes
         Route::get('/segments', [\App\Http\Controllers\User\appdashboard\SegmentController::class, 'index'])->name('site.segments.index');
+        
+        // Site-specific audience routes
+        Route::get('/audiences', [\App\Http\Controllers\User\appdashboard\AudienceController::class, 'index'])->name('site.audiences.index');
+        Route::get('/audiences/create', [\App\Http\Controllers\User\appdashboard\AudienceController::class, 'create'])->name('site.audiences.create');
+        Route::post('/audiences', [\App\Http\Controllers\User\appdashboard\AudienceController::class, 'store'])->name('site.audiences.store');
+        Route::delete('/audiences/{audience}', [\App\Http\Controllers\User\appdashboard\AudienceController::class, 'destroy'])->name('site.audiences.destroy');
     });
     
     // User YouTube routes - users can manage their own channels
