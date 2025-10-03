@@ -16,25 +16,33 @@ self.addEventListener('push', function(event) {
     return;
   }
 
-  let notification;
+  let payload;
   try {
-    notification = event.data.json();
+    payload = event.data.json();
+    console.log('Parsed push payload:', payload);
   } catch (e) {
-    notification = {
+    console.error('Failed to parse push data:', e);
+    payload = {
       title: 'New Notification',
       body: event.data.text()
     };
   }
 
-  const title = notification.title || 'New Notification';
+  const title = payload.title || 'New Notification';
   const options = {
-    body: notification.body || '',
-    icon: notification.icon || '/notix.jpg',
-    badge: notification.badge || '/notix.jpg',
-    data: notification.data || {},
-    requireInteraction: notification.requireInteraction || false,
-    actions: notification.actions || []
+    body: payload.body || '',
+    icon: payload.icon || '/notix.jpg',
+    badge: payload.badge || '/notix.jpg',
+    data: {
+      url: payload.data?.url || payload.url || '/'
+    },
+    requireInteraction: payload.requireInteraction || false,
+    actions: payload.actions || [],
+    tag: 'notification-' + Date.now(),
+    renotify: true
   };
+
+  console.log('Showing notification:', title, options);
 
   event.waitUntil(
     self.registration.showNotification(title, options)
