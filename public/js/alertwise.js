@@ -106,14 +106,17 @@
 
   // Send subscription to server
   var sendSubscriptionToServer = function(subscription) {
-    fetch(config.apiUrl + '/api/subscribe', {
+    var subscriptionData = subscription.toJSON();
+    fetch(config.apiUrl + '/api/push-subscribe', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       body: JSON.stringify({
-        appId: config.appId,
-        subscription: subscription.toJSON()
+        app_id: config.appId,
+        endpoint: subscriptionData.endpoint,
+        keys: subscriptionData.keys
       })
     })
     .then(function(response) {

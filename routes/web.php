@@ -323,5 +323,10 @@ Route::middleware(['auth', 'verified', 'agent'])->group(function () {
     })->name('agent.dashboard');
 });
 
+// Public API routes for push notifications (no auth required)
+Route::post('api/push-subscribe', [\App\Http\Controllers\Api\PublicPushSubscriptionController::class, 'subscribe']);
+Route::post('api/push-unsubscribe', [\App\Http\Controllers\Api\PublicPushSubscriptionController::class, 'unsubscribe']);
+Route::get('api/vapid-public-key', [\App\Http\Controllers\Api\PublicPushSubscriptionController::class, 'getVapidKey']);
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
