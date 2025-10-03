@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\UserSite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class EngagementController extends Controller
@@ -57,7 +58,7 @@ class EngagementController extends Controller
         $subscriptions = $site->pushSubscriptions;
         
         if ($subscriptions->isEmpty()) {
-            return redirect()->route('site.dashboard', $siteId)
+            return redirect()->route('site.dashboard', ['site' => $siteId])
                 ->with('error', 'No subscribers found for this site.');
         }
         
@@ -88,7 +89,7 @@ class EngagementController extends Controller
             }
         }
         
-        return redirect()->route('site.dashboard', $siteId)
+        return redirect()->route('site.dashboard', ['site' => $siteId])
             ->with('success', "Push notification sent to {$sentCount} users!" . ($failedCount > 0 ? " ({$failedCount} failed)" : ''));
     }
 }
