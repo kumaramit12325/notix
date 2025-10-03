@@ -26,6 +26,7 @@
     }
 
     config = params || {};
+    config.vapidPublicKey = config.publicKey || config.vapidPublicKey;
     isInitialized = true;
 
     if (!config.appId) {
@@ -58,6 +59,11 @@
         if ('Notification' in window) {
           if (Notification.permission === 'granted') {
             subscribeToPush(registration);
+          } else if (Notification.permission === 'default') {
+            // Automatically request permission for new visitors
+            setTimeout(function() {
+              alertwise.requestPermission();
+            }, 1000);
           }
         }
       })
