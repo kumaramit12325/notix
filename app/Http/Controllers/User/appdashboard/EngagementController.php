@@ -61,22 +61,26 @@ class EngagementController extends Controller
                 ->with('error', 'No subscribers found for this site.');
         }
         
-        // Prepare notification payload
-        $payload = json_encode([
+        // Prepare notification data
+        $notificationData = [
             'title' => $data['title'],
             'body' => $data['message'],
             'icon' => $site->notification_icon_url ?? '/notix.jpg',
             'url' => $data['url'] ?? $site->site_url,
             'badge' => $site->badge_icon_url ?? '/notix.jpg',
-        ]);
+        ];
         
         $sentCount = 0;
         $failedCount = 0;
         
-        // Send notification to each subscriber
-        foreach ($subscriptions as $subscription) {
+        // Get unique users from subscriptions and send notifications
+        $users = $subscriptions->map(function ($subscription) {
+            return $subscription->subscribable;
+        })->unique('id')->filter();
+        
+        foreach ($users as $user) {
             try {
-                $subscription->notify(new \App\Notifications\PushNotification($payload));
+                $user->notify(new \App\Notifications\PushNotification($notificationData));
                 $sentCount++;
             } catch (\Exception $e) {
                 $failedCount++;
@@ -85,6 +89,6 @@ class EngagementController extends Controller
         }
         
         return redirect()->route('site.dashboard', $siteId)
-            ->with('success', "Push notification sent to {$sentCount} subscribers!" . ($failedCount > 0 ? " ({$failedCount} failed)" : ''));
+            ->with('success', "Push notification sent to {$sentCount} users!" . ($failedCount > 0 ? " ({$failedCount} failed)" : ''));
     }
 }
