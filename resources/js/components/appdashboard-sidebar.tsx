@@ -39,10 +39,6 @@ const customNavItems = [
     hasDropdown: true,
     items: [
         {
-            title: 'Subscribers',
-            href: '/appdashboard/subscriber',
-        },
-        {
             title: 'Segments',
             href: '/appdashboard/segment',
         },

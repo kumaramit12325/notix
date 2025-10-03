@@ -303,7 +303,6 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     Route::resource('appdashboard/engagements', EngagementController::class); // includes POST /appdashboard/engagements for store
     Route::resource('appdashboard/autoresponder', AutoresponderController::class);
     Route::resource('appdashboard/template', TemplateController::class);
-    Route::get('appdashboard/subscriber', [SubscriberController::class, 'index'])->name('appdashboard.subscriber');
     Route::get('appdashboard/segment', [SegmentController::class, 'index'])->name('appdashboard.segment');
     Route::resource('appdashboard/audience', AudienceController::class);
     Route::resource('appdashboard/attribute', AttributeController::class);
