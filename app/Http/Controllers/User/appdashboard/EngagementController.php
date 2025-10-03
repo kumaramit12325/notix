@@ -62,24 +62,36 @@ class EngagementController extends Controller
                 ->with('error', 'No subscribers found for this site.');
         }
         
-        // Prepare notification data
+        // Prepare notification data with absolute URLs
+        $appUrl = config('app.url');
         $notificationData = [
             'title' => $data['title'],
             'body' => $data['message'],
-            'icon' => $site->notification_icon_url ?? '/notix.jpg',
+            'icon' => $site->notification_icon_url ?? $appUrl . '/notix.jpg',
             'url' => $data['url'] ?? $site->site_url,
-            'badge' => $site->badge_icon_url ?? '/notix.jpg',
+            'badge' => $site->badge_icon_url ?? $appUrl . '/notix.jpg',
         ];
         
         // Send notification to the site (which has push subscriptions)
         try {
+            Log::info('Sending push notification', [
+                'site_id' => $siteId,
+                'subscribers' => $subscriptions->count(),
+                'notification_data' => $notificationData
+            ]);
+            
             $site->notify(new \App\Notifications\PushNotification($notificationData));
             $sentCount = $subscriptions->count();
+            
+            Log::info('Push notification sent successfully', ['count' => $sentCount]);
             
             return redirect()->route('site.dashboard', ['site' => $siteId])
                 ->with('success', "Push notification sent to {$sentCount} subscribers!");
         } catch (\Exception $e) {
-            Log::error('Failed to send push notification: ' . $e->getMessage());
+            Log::error('Failed to send push notification', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             
             return redirect()->route('site.dashboard', ['site' => $siteId])
                 ->with('error', 'Failed to send push notification: ' . $e->getMessage());
