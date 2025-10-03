@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import AppDashboardSidebar from '@/components/appdashboard-sidebar';
 import { AppShell } from '@/components/app-shell';
@@ -6,25 +6,59 @@ import { AppContent } from '@/components/app-content';
 import { UserSidebarHeader } from '@/components/user-sidebar-header';
 
 export default function AppDashboard() {
+  const { site, stats } = usePage().props as any;
+
+  const statCards = [
+    { 
+      title: 'Total Subscribers', 
+      value: stats?.total_subscribers || 0, 
+      change: stats?.subscribers_last_30_days || 0 
+    },
+    { 
+      title: 'Total Notification', 
+      value: stats?.total_notifications || 0, 
+      change: 0 
+    },
+    { 
+      title: 'Delivered', 
+      value: stats?.delivered || 0, 
+      change: 0 
+    },
+    { 
+      title: 'Clicked', 
+      value: stats?.clicked || 0, 
+      change: stats?.clicked_last_30_days || 0 
+    },
+  ];
+
   return (
     <AppShell variant="sidebar">
       <AppDashboardSidebar />
       <AppContent variant="sidebar" className="overflow-x-hidden">
-        <UserSidebarHeader breadcrumbs={[{ title: 'App Dashboard', href: '/user/appdashboard/dashboard' }]} />
+        <UserSidebarHeader breadcrumbs={[
+          { title: site?.site_name || 'Dashboard', href: `/sites/${site?.id}/dashboard` }
+        ]} />
         <Head title="Dashboard" />
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Dashboard <span className="inline-block align-middle text-blue-500" title="Dashboard Overview">&#9432;</span></h1>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded flex items-center gap-2">
-              <span className="text-lg">&#8853;</span> New Push Notification
-            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Dashboard <span className="inline-block align-middle text-blue-500" title="Dashboard Overview">&#9432;</span></h1>
+              <p className="text-sm text-gray-600 mt-1">{site?.site_name} - Overview & Statistics</p>
+            </div>
+            <Link href={`/sites/${site?.id}/engagements/create`}>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded flex items-center gap-2">
+                <span className="text-lg">&#8853;</span> New Push Notification
+              </Button>
+            </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            {['Total Subscribers', 'Total Notification', 'Delivered', 'Clicked'].map((title, idx) => (
-              <div key={title} className="bg-white rounded shadow p-6 flex flex-col items-start">
-                <span className="text-gray-600 text-sm mb-2">{title}</span>
-                <span className="text-3xl font-bold mb-1">0</span>
-                <span className="text-green-500 text-xs flex items-center gap-1">&#8593; 0 <span className="text-gray-400">vs prev 30 days</span></span>
+            {statCards.map((stat) => (
+              <div key={stat.title} className="bg-white rounded shadow p-6 flex flex-col items-start">
+                <span className="text-gray-600 text-sm mb-2">{stat.title}</span>
+                <span className="text-3xl font-bold mb-1">{stat.value}</span>
+                <span className={`text-xs flex items-center gap-1 ${stat.change > 0 ? 'text-green-500' : 'text-gray-400'}`}>
+                  {stat.change > 0 && '↑'} {stat.change} <span className="text-gray-400">vs prev 30 days</span>
+                </span>
               </div>
             ))}
           </div>

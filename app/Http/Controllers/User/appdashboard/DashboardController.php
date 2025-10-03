@@ -19,13 +19,24 @@ class DashboardController extends Controller
                 abort(403, 'Unauthorized');
             }
             
+            // Calculate real statistics
+            $totalSubscribers = $site->pushSubscriptions()->count();
+            
+            // Get stats from the last 30 days for comparison
+            $thirtyDaysAgo = now()->subDays(30);
+            $subscribersLast30Days = $site->pushSubscriptions()
+                ->where('created_at', '>=', $thirtyDaysAgo)
+                ->count();
+            
             return Inertia::render('appdashboard/dashboard', [
                 'site' => $site,
                 'stats' => [
-                    'subscribers' => 0,
-                    'notifications_sent' => 0,
-                    'click_rate' => 0,
-                    'conversion_rate' => 0,
+                    'total_subscribers' => $totalSubscribers,
+                    'subscribers_last_30_days' => $subscribersLast30Days,
+                    'total_notifications' => 0, // Will track when we add notification history
+                    'delivered' => 0, // Will track when we add delivery tracking
+                    'clicked' => $site->clicks ?? 0,
+                    'clicked_last_30_days' => 0, // Will track when we add click tracking
                 ]
             ]);
         }
