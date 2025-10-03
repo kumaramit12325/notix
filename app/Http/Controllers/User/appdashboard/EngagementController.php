@@ -62,12 +62,20 @@ class EngagementController extends Controller
                 ->with('error', 'No subscribers found for this site.');
         }
         
-        // Prepare notification data with absolute URLs
+        // Handle uploaded icon
         $appUrl = config('app.url');
+        $iconUrl = $site->notification_icon_url ?? $appUrl . '/notix.jpg';
+        
+        if ($request->hasFile('icon')) {
+            $iconPath = $request->file('icon')->store('notification-icons', 'public');
+            $iconUrl = $appUrl . '/storage/' . $iconPath;
+        }
+        
+        // Prepare notification data with absolute URLs
         $notificationData = [
             'title' => $data['title'],
             'body' => $data['message'],
-            'icon' => $site->notification_icon_url ?? $appUrl . '/notix.jpg',
+            'icon' => $iconUrl,
             'url' => $data['url'] ?? $site->site_url,
             'badge' => $site->badge_icon_url ?? $appUrl . '/notix.jpg',
         ];
