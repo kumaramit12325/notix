@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage, useForm, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import AppDashboardSidebar from '@/components/appdashboard-sidebar';
 import { AppShell } from '@/components/app-shell';
@@ -28,17 +28,45 @@ export default function EngagementCreate() {
   const [addActionButtons, setAddActionButtons] = useState(false);
   const [notificationDuration, setNotificationDuration] = useState(false);
   const [utmParameters, setUtmParameters] = useState(false);
+  const [sendImmediately, setSendImmediately] = useState(true);
 
   const [audience, setAudience] = useState('all');
+  
+  const { data, setData, post, processing } = useForm({
+    title: title,
+    message: message,
+    url: url,
+    icon: icon,
+    audience: audience,
+    send_immediately: true,
+  });
 
   const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setIcon(e.target.files[0]);
+      setData('icon', e.target.files[0]);
     }
   };
 
   const handleNext = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const handlePrev = () => setStep((s) => Math.max(s - 1, 0));
+  
+  const handleSendNow = () => {
+    setData({
+      title,
+      message,
+      url,
+      icon,
+      audience,
+      send_immediately: sendImmediately,
+    });
+    
+    post(`/sites/${site.id}/engagements`, {
+      onSuccess: () => {
+        router.visit(`/sites/${site.id}/dashboard`);
+      }
+    });
+  };
 
   // --- PREVIEW CARDS ---
   const iconUrl = icon ? URL.createObjectURL(icon) : '/images/rocket.png';
@@ -166,18 +194,35 @@ export default function EngagementCreate() {
                   <div className="font-semibold text-lg mb-2">Send/Schedule</div>
                   <div className="flex flex-col gap-4">
                     <label className="flex items-center gap-2 border rounded px-4 py-3 cursor-pointer">
-                      <input type="radio" name="schedule" defaultChecked />
+                      <input 
+                        type="radio" 
+                        name="schedule" 
+                        checked={sendImmediately}
+                        onChange={() => setSendImmediately(true)}
+                      />
                       <span>Begin sending immediately</span>
                     </label>
                     <label className="flex items-center gap-2 border rounded px-4 py-3 cursor-pointer">
-                      <input type="radio" name="schedule" />
+                      <input 
+                        type="radio" 
+                        name="schedule" 
+                        checked={!sendImmediately}
+                        onChange={() => setSendImmediately(false)}
+                      />
                       <span>Begin sending at a particular day and time</span>
                     </label>
                   </div>
                   {/* --- BUTTONS POLISH --- */}
                   <div className="flex gap-2 justify-between mt-8">
                     <Button type="button" variant="outline" onClick={handlePrev} className="hover:bg-blue-50 transition-all">&larr; Back</Button>
-                    <Button type="button" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow transition-all">Send Notification Now</Button>
+                    <Button 
+                      type="button" 
+                      onClick={handleSendNow}
+                      disabled={processing}
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow transition-all disabled:opacity-50"
+                    >
+                      {processing ? 'Sending...' : 'Send Notification Now'}
+                    </Button>
                   </div>
                 </div>
               )}
