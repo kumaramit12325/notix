@@ -51,22 +51,31 @@ self.addEventListener('push', function(event) {
 
 self.addEventListener('notificationclick', function(event) {
   console.log('Service Worker: Notification clicked', event);
+  console.log('Notification data:', event.notification.data);
   
   event.notification.close();
 
   const urlToOpen = event.notification.data?.url || '/';
+  console.log('Opening URL:', urlToOpen);
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+      // Try to find existing tab with same URL
       for (let i = 0; i < clientList.length; i++) {
         const client = clientList[i];
         if (client.url === urlToOpen && 'focus' in client) {
+          console.log('Focusing existing window:', urlToOpen);
           return client.focus();
         }
       }
+      
+      // No existing tab found, open new window
       if (clients.openWindow) {
+        console.log('Opening new window:', urlToOpen);
         return clients.openWindow(urlToOpen);
       }
+    }).catch(function(error) {
+      console.error('Error opening notification URL:', error);
     })
   );
 });
@@ -90,3 +99,4 @@ self.addEventListener('pushsubscriptionchange', function(event) {
       })
   );
 });
+// Version: 1759502954
