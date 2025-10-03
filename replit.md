@@ -57,11 +57,14 @@ Preferred communication style: Simple, everyday language.
 - **Users**: Authentication, profiles, owned sites
 - **UserSites**: User-owned sites with configuration
   - Fields: name, url, script_token, is_connected, badge_icon_url, notification_icon_url, remove_powered_by, universal_subscription_link
-  - Relationships: belongs to User
+  - Relationships: belongs to User, has many PushSubscriptions
+- **PushSubscriptions**: Site-specific push notification subscriptions
+  - Fields: id, subscribable_type, subscribable_id, user_site_id (links to UserSite), endpoint, public_key, auth_token, content_encoding
+  - Relationships: belongs to UserSite
+  - Note: Polymorphic relationship allows subscriptions to different entities
 - **Campaigns**: Notification campaigns
 - **Domains**: Managed domains for push notifications
 - **Audiences**: Subscriber segmentation
-- **Subscriptions**: User subscription tracking
 - **Push notifications**: Sent/scheduled notifications
 
 ## Site Management System
@@ -74,11 +77,17 @@ Preferred communication style: Simple, everyday language.
 - Form validation with Inertia.js form helper
 - Changes persist via POST to SiteConfigController::update()
 
+**Subscribers Management** (`/sites/{site}/subscribers`):
+- View all push notification subscribers for a specific site
+- Display subscriber ID, endpoint, and subscription date
+- Empty state with helpful message when no subscribers exist
+- Site-specific subscriber tracking via user_site_id foreign key
+
 **Site-Specific Routes** (Protected with user ownership validation):
 - GET `/sites/{site}/dashboard` - Site overview dashboard
 - GET `/sites/{site}/config` - Site configuration page
 - POST `/sites/{site}/config` - Save configuration changes
-- GET `/sites/{site}/subscribers` - Subscriber management
+- GET `/sites/{site}/subscribers` - Subscriber management and viewing
 
 **Access Control**: All site routes validate that `$site->user_id === Auth::id()` before allowing access
 
