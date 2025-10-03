@@ -19,6 +19,7 @@ class SiteSetupController extends Controller
         
         $appId = $site->id . '-' . $site->script_token;
         $publicKey = config('webpush.vapid.public_key');
+        $appUrl = config('app.url');
         
         return Inertia::render('appdashboard/setting/setup', [
             'site' => $site,
@@ -30,7 +31,8 @@ class SiteSetupController extends Controller
             'settings' => [
                 'appId' => $appId,
                 'publicKey' => $publicKey,
-            ]
+            ],
+            'appUrl' => $appUrl
         ]);
     }
 }
