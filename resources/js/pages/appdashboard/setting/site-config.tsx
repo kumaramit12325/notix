@@ -11,6 +11,8 @@ export default function SiteConfigPage() {
   const { data, setData, post, processing, isDirty } = useForm({
     name: site?.name ?? '',
     url: site?.url ?? '',
+    notification_icon_url: site?.notification_icon_url ?? '',
+    badge_icon_url: site?.badge_icon_url ?? '',
     remove_powered_by: Boolean(site?.remove_powered_by ?? false),
     universal_subscription_link: Boolean(site?.universal_subscription_link ?? false),
   });
@@ -71,14 +73,50 @@ export default function SiteConfigPage() {
                   onChange={(e) => setData('url', e.target.value)} 
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Upload Your Site Icon</label>
-                <div className="border rounded p-6 bg-[#f6f7fb] flex items-center gap-6 max-w-5xl">
-                  <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl">A</div>
-                  <button type="button" className="border px-4 py-2 rounded bg-white">Upload Image</button>
-                </div>
-                <p className="text-gray-600 mt-2 max-w-3xl">Note: Use a square image (e.g., 192x192 pixels) in JPG, PNG, GIF, WEBP, AVIF, or SVG format, up to 2 MB. Animations are not supported.</p>
+              <div className="grid grid-cols-1 md:grid-cols-6 items-center gap-3">
+                <label className="md:col-span-1 text-sm font-medium">Notification Icon URL</label>
+                <input 
+                  className="md:col-span-5 border rounded px-3 py-2" 
+                  placeholder="https://yoursite.com/icon.png"
+                  value={data.notification_icon_url} 
+                  onChange={(e) => setData('notification_icon_url', e.target.value)} 
+                />
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-6 items-center gap-3">
+                <label className="md:col-span-1 text-sm font-medium">Badge Icon URL</label>
+                <input 
+                  className="md:col-span-5 border rounded px-3 py-2" 
+                  placeholder="https://yoursite.com/badge.png"
+                  value={data.badge_icon_url} 
+                  onChange={(e) => setData('badge_icon_url', e.target.value)} 
+                />
+              </div>
+              {(!data.notification_icon_url && !data.badge_icon_url) && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
+                  <p className="text-yellow-800 text-sm">
+                    ⚠️ <strong>Important:</strong> You must configure at least one icon URL before sending notifications. Icons must be hosted on your own domain (same-origin) to work correctly on your live website.
+                  </p>
+                </div>
+              )}
+              {(data.notification_icon_url || data.badge_icon_url) && (
+                <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                  <p className="text-blue-800 text-sm font-medium mb-2">Current Icons Preview:</p>
+                  <div className="flex gap-4 items-center">
+                    {data.notification_icon_url && (
+                      <div className="flex flex-col gap-2">
+                        <img src={data.notification_icon_url} alt="Notification Icon" className="w-16 h-16 rounded object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                        <span className="text-xs text-blue-600">Notification</span>
+                      </div>
+                    )}
+                    {data.badge_icon_url && (
+                      <div className="flex flex-col gap-2">
+                        <img src={data.badge_icon_url} alt="Badge Icon" className="w-16 h-16 rounded object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                        <span className="text-xs text-blue-600">Badge</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

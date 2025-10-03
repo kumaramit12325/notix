@@ -33,6 +33,8 @@ class SiteConfigController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'url' => 'sometimes|url|max:255',
+            'notification_icon_url' => 'sometimes|nullable|url|max:500',
+            'badge_icon_url' => 'sometimes|nullable|url|max:500',
             'remove_powered_by' => 'sometimes|boolean',
             'universal_subscription_link' => 'sometimes|boolean',
         ]);
