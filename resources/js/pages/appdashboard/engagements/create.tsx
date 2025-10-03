@@ -25,7 +25,14 @@ export default function EngagementCreate() {
   const [notificationDuration, setNotificationDuration] = useState(false);
   const [utmParameters, setUtmParameters] = useState(false);
 
-  const { data, setData, post, processing } = useForm({
+  const { data, setData, post, processing } = useForm<{
+    title: string;
+    message: string;
+    url: string;
+    icon: File | null;
+    audience: string;
+    send_immediately: boolean;
+  }>({
     title: '',
     message: '',
     url: siteUrl,
