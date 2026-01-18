@@ -2,30 +2,28 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ArrowLeft, Link, CreditCard, Bitcoin, DollarSign, Building2, X } from 'lucide-react';
 import PricingPlansub from './pricingPlansub';
 
-interface Product {
-  id: string;
+interface PricingPlan {
+  id: number;
   name: string;
+  slug: string;
+  description: string | null;
   price: number;
+  currency: string;
+  billing_period: string | null;
   features: string[];
-  selected: boolean;
+  is_active: boolean;
+  is_featured: boolean;
+  sort_order: number;
+  cta_text: string;
 }
 
 interface CheckoutProps {
-  // Add any props if needed
+  plans?: PricingPlan[];
 }
 
-const Checkout: React.FC<CheckoutProps> = () => {
-  const [selectedProduct, setSelectedProduct] = useState<string>('pro');
-  const [premiumAddon, setPremiumAddon] = useState(false);
-  const [accountDetailsExpanded, setAccountDetailsExpanded] = useState(false);
-  const [billingDetailsExpanded, setBillingDetailsExpanded] = useState(true);
-  const [companyDetailsExpanded, setCompanyDetailsExpanded] = useState(false);
-  const [companyType, setCompanyType] = useState<'individual' | 'business'>('individual');
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'emi'>('card');
-  const [termsAccepted, setTermsAccepted] = useState(false);
- 
-
-  const products: Product[] = [
+const Checkout: React.FC<CheckoutProps> = ({ plans = [] }) => {
+  // Convert plans to products format, or use default if no plans
+  const defaultProducts = [
     {
       id: 'startup',
       name: 'Startup v5',
@@ -64,6 +62,27 @@ const Checkout: React.FC<CheckoutProps> = () => {
       selected: true
     }
   ];
+
+  const products = plans.length > 0 
+    ? plans.map((plan, index) => ({
+        id: plan.slug || `plan-${plan.id}`,
+        name: plan.name,
+        price: parseFloat(plan.price.toString()),
+        features: plan.features || [],
+        selected: index === 0 || plan.is_featured
+      }))
+    : defaultProducts;
+
+  const defaultSelectedId = products.find(p => p.selected)?.id || products[0]?.id || 'pro';
+  const [selectedProduct, setSelectedProduct] = useState<string>(defaultSelectedId);
+  const [premiumAddon, setPremiumAddon] = useState(false);
+  const [accountDetailsExpanded, setAccountDetailsExpanded] = useState(false);
+  const [billingDetailsExpanded, setBillingDetailsExpanded] = useState(true);
+  const [companyDetailsExpanded, setCompanyDetailsExpanded] = useState(false);
+  const [companyType, setCompanyType] = useState<'individual' | 'business'>('individual');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'emi'>('card');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+ 
 
   const selectedProductData = products.find(p => p.id === selectedProduct);
   const gst = selectedProductData ? (selectedProductData.price * 0.18) : 0;

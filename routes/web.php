@@ -50,7 +50,8 @@ Route::get('/contact', function () {
 })->name('contact');
 
 Route::get('/buynow', function () {
-    return Inertia::render('Buynow');
+    $plans = \App\Models\PricingPlan::active()->ordered()->get();
+    return Inertia::render('Buynow', compact('plans'));
 })->name('buynow');
 
 // Test route for navigation (temporary)
@@ -153,6 +154,9 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     // Segmentation routes
     Route::resource('segmentation', SegmentationController::class);
     Route::post('segmentation/bulk-delete', [SegmentationController::class, 'bulkDelete'])->name('segmentation.bulk-delete');
+    
+    // Pricing Plans routes
+    Route::resource('pricing-plans', \App\Http\Controllers\Backend\PricingPlanController::class);
     
     // User Sites routes (Admin)
     Route::resource('admin/user-sites', AdminUserSiteController::class)->names([
