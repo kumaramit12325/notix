@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ArrowLeft, Link, CreditCard, Bitcoin, DollarSign, Building2, X } from 'lucide-react';
 import PricingPlansub from './pricingPlansub';
+import { router } from '@inertiajs/react';
 
 interface Product {
   id: string;
@@ -21,7 +22,7 @@ const Checkout: React.FC<CheckoutProps> = () => {
   const [billingDetailsExpanded, setBillingDetailsExpanded] = useState(true);
   const [companyDetailsExpanded, setCompanyDetailsExpanded] = useState(false);
   const [companyType, setCompanyType] = useState<'individual' | 'business'>('individual');
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'emi'>('card');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'emi' | 'phonepe' | 'cashfree'>('card');
   const [termsAccepted, setTermsAccepted] = useState(false);
  
 
@@ -69,6 +70,14 @@ const Checkout: React.FC<CheckoutProps> = () => {
   const gst = selectedProductData ? (selectedProductData.price * 0.18) : 0;
   const total = selectedProductData ? selectedProductData.price + gst : 0;
   const totalInr = total * 83; // Approximate conversion rate
+
+  const handlePayment = () => {
+    if (paymentMethod === 'phonepe') {
+        router.post(route('phonepe.pay'), { amount: total });
+    } else if (paymentMethod === 'cashfree') {
+        router.post(route('cashfree.pay'), { amount: total });
+    }
+  };
 
   const premiumAddonFeatures = [
     'URL Shortener with subscription',
@@ -395,6 +404,7 @@ const Checkout: React.FC<CheckoutProps> = () => {
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
                 disabled={!termsAccepted}
+                onClick={handlePayment}
               >
                 Complete Purchase
               </button>
@@ -472,27 +482,47 @@ const Checkout: React.FC<CheckoutProps> = () => {
                 
                 <div
                   className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                    paymentMethod === 'emi'
+                    paymentMethod === 'phonepe'
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
-                  onClick={() => setPaymentMethod('emi')}
+                  onClick={() => setPaymentMethod('phonepe')}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <input
                         type="radio"
                         name="paymentMethod"
-                        checked={paymentMethod === 'emi'}
-                        onChange={() => setPaymentMethod('emi')}
+                        checked={paymentMethod === 'phonepe'}
+                        onChange={() => setPaymentMethod('phonepe')}
                         className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                       />
                       <div>
-                        <div className="font-medium text-gray-900">Card EMI</div>
+                        <div className="font-medium text-gray-900">PhonePe</div>
                       </div>
                     </div>
-                    <div className="w-20 h-8 bg-blue-600 rounded text-white text-xs flex items-center justify-center font-bold">
-                      Razorpay
+                  </div>
+                </div>
+                <div
+                  className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                    paymentMethod === 'cashfree'
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setPaymentMethod('cashfree')}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        checked={paymentMethod === 'cashfree'}
+                        onChange={() => setPaymentMethod('cashfree')}
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <div>
+                        <div className="font-medium text-gray-900">Cashfree</div>
+                      </div>
                     </div>
                   </div>
                 </div>
