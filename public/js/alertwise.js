@@ -1,4 +1,4 @@
-(function (window) {
+(function(window) {
   'use strict';
 
   var alertwise = window.alertwise || [];
@@ -6,7 +6,7 @@
   var isInitialized = false;
 
   // Process queued commands
-  var processQueue = function () {
+  var processQueue = function() {
     while (alertwise.length > 0) {
       var command = alertwise.shift();
       var action = command[0];
@@ -19,7 +19,7 @@
   };
 
   // Initialize the push notification system
-  var initialize = function (params) {
+  var initialize = function(params) {
     if (isInitialized) {
       console.warn('Alertwise already initialized');
       return;
@@ -48,11 +48,11 @@
   };
 
   // Register the service worker
-  var registerServiceWorker = function () {
+  var registerServiceWorker = function() {
     var swUrl = config.serviceWorkerUrl || '/service-worker.js';
 
     navigator.serviceWorker.register(swUrl)
-      .then(function (registration) {
+      .then(function(registration) {
         console.log('Service Worker registered successfully:', registration);
 
         // Check for push permission
@@ -65,7 +65,7 @@
 
             if (!isSafari) {
               // Auto-request for Chrome, Firefox, Edge after 1 second
-              setTimeout(function () {
+              setTimeout(function() {
                 console.log('Auto-requesting notification permission...');
                 alertwise.requestPermission();
               }, 1000);
@@ -75,13 +75,13 @@
           }
         }
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.error('Service Worker registration failed:', error);
       });
   };
 
   // Subscribe to push notifications
-  var subscribeToPush = function (registration) {
+  var subscribeToPush = function(registration) {
     if (!config.vapidPublicKey) {
       console.error('Alertwise: VAPID public key is required for push notifications');
       return;
@@ -93,43 +93,17 @@
       userVisibleOnly: true,
       applicationServerKey: applicationServerKey
     })
-      .then(function (subscription) {
-        console.log('Push subscription successful:', subscription);
-        sendSubscriptionToServer(subscription);
-      })
-      .catch(function (error) {
-        console.log('Push subscription error:', error);
-
-        if (error.name === 'InvalidAccessError') {
-          console.warn('Subscription failed with InvalidAccessError. This implies a key mismatch. Unsubscribing and retrying...');
-          registration.pushManager.getSubscription()
-            .then(function (subscription) {
-              if (subscription) {
-                return subscription.unsubscribe();
-              }
-              return Promise.resolve();
-            })
-            .then(function () {
-              return registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: applicationServerKey
-              });
-            })
-            .then(function (subscription) {
-              console.log('Re-subscription successful:', subscription);
-              sendSubscriptionToServer(subscription);
-            })
-            .catch(function (retryError) {
-              console.error('Push subscription retry failed:', retryError);
-            });
-        } else {
-          console.error('Push subscription failed:', error);
-        }
-      });
+    .then(function(subscription) {
+      console.log('Push subscription successful:', subscription);
+      sendSubscriptionToServer(subscription);
+    })
+    .catch(function(error) {
+      console.error('Push subscription failed:', error);
+    });
   };
 
   // Convert VAPID key
-  var urlBase64ToUint8Array = function (base64String) {
+  var urlBase64ToUint8Array = function(base64String) {
     var padding = '='.repeat((4 - base64String.length % 4) % 4);
     var base64 = (base64String + padding)
       .replace(/\-/g, '+')
@@ -145,8 +119,7 @@
   };
 
   // Send subscription to server
-  var sendSubscriptionToServer = function (subscription) {
-    console.log('Sending subscription to server:', subscription);
+  var sendSubscriptionToServer = function(subscription) {
     var subscriptionData = subscription.toJSON();
     fetch(config.apiUrl + '/api/push-subscribe', {
       method: 'POST',
@@ -160,22 +133,22 @@
         keys: subscriptionData.keys
       })
     })
-      .then(function (response) {
-        if (!response.ok) {
-          throw new Error('Failed to send subscription to server');
-        }
-        return response.json();
-      })
-      .then(function (data) {
-        console.log('Subscription sent to server successfully:', data);
-      })
-      .catch(function (error) {
-        console.error('Error sending subscription to server:', error);
-      });
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('Failed to send subscription to server');
+      }
+      return response.json();
+    })
+    .then(function(data) {
+      console.log('Subscription sent to server successfully:', data);
+    })
+    .catch(function(error) {
+      console.error('Error sending subscription to server:', error);
+    });
   };
 
   // Request notification permission
-  alertwise.requestPermission = function () {
+  alertwise.requestPermission = function() {
     if (!('Notification' in window)) {
       console.warn('This browser does not support notifications');
       return Promise.reject(new Error('Notifications not supported'));
@@ -187,13 +160,13 @@
       console.log('Safari detected - requesting permission from user gesture');
     }
 
-    return Notification.requestPermission().then(function (permission) {
+    return Notification.requestPermission().then(function(permission) {
       console.log('Notification permission result:', permission);
 
       if (permission === 'granted') {
         console.log('Notification permission granted');
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.ready.then(function (registration) {
+          navigator.serviceWorker.ready.then(function(registration) {
             subscribeToPush(registration);
           });
         }
@@ -203,7 +176,7 @@
         console.log('Notification permission dismissed');
       }
       return permission;
-    }).catch(function (error) {
+    }).catch(function(error) {
       console.error('Error requesting notification permission:', error);
       throw error;
     });
@@ -213,7 +186,7 @@
   processQueue();
 
   // Override push to process new commands
-  alertwise.push = function (command) {
+  alertwise.push = function(command) {
     var action = command[0];
     var params = command[1];
 

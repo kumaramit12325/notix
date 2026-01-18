@@ -1,6 +1,8 @@
 import { Head, router } from '@inertiajs/react'
 import { useEffect, useState } from 'react'
 import UserLayout from '@/layouts/user-layout'
+import { initializeApp } from "firebase/app";
+import { getMessaging, getToken } from "firebase/messaging";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Grid2X2, RefreshCw, Trash2, Settings } from 'lucide-react'
@@ -29,6 +31,31 @@ export default function Dashboard({ sites = [] }: DashboardProps) {
   const [installModalOpen, setInstallModalOpen] = useState(false);
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [fcmToken, setFcmToken] = useState<string | null>(null);
+
+  const firebaseConfig = {
+    apiKey: "your-api-key",
+    authDomain: "your-auth-domain",
+    projectId: "your-project-id",
+    storageBucket: "your-storage-bucket",
+    messagingSenderId: "your-messaging-sender-id",
+    appId: "your-app-id"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+
+  useEffect(() => {
+    getToken(messaging, { vapidKey: 'your-vapid-key' }).then((currentToken) => {
+      if (currentToken) {
+        setFcmToken(currentToken);
+      }
+    });
+  }, []);
+
+  const handleSendNotification = () => {
+    router.post('/firebase/send-notification', { token: fcmToken });
+  };
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -100,6 +127,7 @@ export default function Dashboard({ sites = [] }: DashboardProps) {
         )}
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-gray-900">Apps</h1>
+          <Button onClick={handleSendNotification}>Send Notification</Button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
