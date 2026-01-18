@@ -30,6 +30,8 @@ use App\Http\Controllers\User\ProfileController as UserProfileController;
 use App\Http\Controllers\UserPaymentController;
 use App\Http\Controllers\User\UserSiteController;
 use App\Http\Controllers\User\SiteVerificationController;
+use App\Http\Controllers\PhonePeController;
+use App\Http\Controllers\CashfreeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -332,6 +334,13 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     Route::post('push-subscriptions/unsubscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'unsubscribe'])->name('push.unsubscribe');
     Route::get('push-subscriptions/vapid-public-key', [\App\Http\Controllers\PushSubscriptionController::class, 'getPublicKey'])->name('push.vapid-key');
 
+    // PhonePe routes
+    Route::post('phonepe/pay', [PhonePeController::class, 'pay'])->name('phonepe.pay');
+    Route::post('phonepe/callback', [PhonePeController::class, 'callback'])->name('phonepe.callback');
+
+    // Cashfree routes
+    Route::post('cashfree/pay', [CashfreeController::class, 'pay'])->name('cashfree.pay');
+    Route::post('cashfree/callback', [CashfreeController::class, 'callback'])->name('cashfree.callback');
 });
 
 // Agent routes - for agent users
