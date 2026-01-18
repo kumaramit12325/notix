@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +26,7 @@
             border-radius: 20px;
             padding: 40px;
             max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
         h1 {
@@ -132,7 +131,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <h1>Test Push Notifications</h1>
@@ -188,15 +186,15 @@
         // Initialize alertwise with janko site config
         log('Initializing Alertwise for janko.in...');
         alertwise.push(['init', {
-            appId: '1-ANsps7MS5hIVsXWmtRVa6qSJw70EsssiK',
+            appId: 'cbI77AqjJdQQS4KmxhmrtR6hsjElZm60',
             apiUrl: window.location.origin,
-            publicKey: 'BFc8AuSPhFbuLiHyP_rTcII2pCPFwkYLLdWK7zJbvzA_V_AZM6ona6csjpnWzdq7lIu-ijEwg4k9aoUNVAQYg7s'
+            publicKey: 'BO0bf2s6mmC3xh8z39weji2Alatt7fRjtasavfhUyp_QMDYuCOe0UnQs_yUC7nX2gHd8919s563PYPzjIIopaww'
         }]);
 
         // Detect iOS and check if running as PWA
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-            window.navigator.standalone === true;
+                            window.navigator.standalone === true;
 
         if (isIOS && !isStandalone) {
             updateStatus('📱 On iPhone: You must add this app to your Home Screen first!', 'error');
@@ -241,7 +239,7 @@
             log('Requesting notification permission...');
             updateStatus('Please allow notifications in the popup...', 'info');
 
-            alertwise.requestPermission().then(function (permission) {
+            alertwise.requestPermission().then(function(permission) {
                 if (permission === 'granted') {
                     updateStatus('✅ Notifications enabled! You will receive push notifications.', 'success');
                     subscribeBtn.textContent = '✅ Notifications Enabled';
@@ -256,7 +254,7 @@
 
         // Listen for service worker messages
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', function (event) {
+            navigator.serviceWorker.addEventListener('message', function(event) {
                 log('Received message from service worker: ' + JSON.stringify(event.data));
             });
 
@@ -265,7 +263,7 @@
 
         // Override console.log to capture logs
         const originalLog = console.log;
-        console.log = function (...args) {
+        console.log = function(...args) {
             originalLog.apply(console, args);
             if (args[0] && typeof args[0] === 'string') {
                 if (args[0].includes('Service Worker') || args[0].includes('Push') || args[0].includes('subscription')) {
@@ -277,5 +275,4 @@
         log('Test page loaded successfully');
     </script>
 </body>
-
 </html>

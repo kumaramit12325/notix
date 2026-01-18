@@ -32,6 +32,7 @@ use App\Http\Controllers\User\UserSiteController;
 use App\Http\Controllers\User\SiteVerificationController;
 use App\Http\Controllers\PhonePeController;
 use App\Http\Controllers\CashfreeController;
+use App\Http\Controllers\FirebaseController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -52,8 +53,7 @@ Route::get('/contact', function () {
 })->name('contact');
 
 Route::get('/buynow', function () {
-    $plans = \App\Models\PricingPlan::active()->ordered()->get();
-    return Inertia::render('Buynow', compact('plans'));
+    return Inertia::render('Buynow');
 })->name('buynow');
 
 // Test route for navigation (temporary)
@@ -156,9 +156,6 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     // Segmentation routes
     Route::resource('segmentation', SegmentationController::class);
     Route::post('segmentation/bulk-delete', [SegmentationController::class, 'bulkDelete'])->name('segmentation.bulk-delete');
-    
-    // Pricing Plans routes
-    Route::resource('pricing-plans', \App\Http\Controllers\Backend\PricingPlanController::class);
     
     // User Sites routes (Admin)
     Route::resource('admin/user-sites', AdminUserSiteController::class)->names([
@@ -341,6 +338,9 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     // Cashfree routes
     Route::post('cashfree/pay', [CashfreeController::class, 'pay'])->name('cashfree.pay');
     Route::post('cashfree/callback', [CashfreeController::class, 'callback'])->name('cashfree.callback');
+
+    // Firebase routes
+    Route::post('firebase/send-notification', [FirebaseController::class, 'sendNotification'])->name('firebase.send-notification');
 });
 
 // Agent routes - for agent users

@@ -19,7 +19,6 @@ import {
     Settings,
     Server,
     UserCircleIcon,
-    Tag,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -99,11 +98,6 @@ const mainNavItems: NavItem[] = [
         title: 'Payments',
         href: '/payments',
         icon: CreditCard,
-    },
-    {
-        title: 'Pricing Plans',
-        href: '/pricing-plans',
-        icon: Tag,
     },
     // {
     //     title: 'Contact',
