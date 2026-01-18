@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -20,52 +21,52 @@
             justify-content: center;
             padding: 20px;
         }
-        
+
         .container {
             background: white;
             border-radius: 20px;
             padding: 40px;
             max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
-        
+
         h1 {
             color: #667eea;
             margin-bottom: 10px;
             font-size: 32px;
         }
-        
+
         .site-url {
             color: #666;
             font-size: 14px;
             margin-bottom: 30px;
         }
-        
+
         .status {
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 14px;
         }
-        
+
         .status.info {
             background: #e3f2fd;
             color: #1976d2;
             border: 1px solid #90caf9;
         }
-        
+
         .status.success {
             background: #e8f5e9;
             color: #2e7d32;
             border: 1px solid #81c784;
         }
-        
+
         .status.error {
             background: #ffebee;
             color: #c62828;
             border: 1px solid #ef5350;
         }
-        
+
         button {
             background: #667eea;
             color: white;
@@ -79,35 +80,35 @@
             width: 100%;
             margin-bottom: 15px;
         }
-        
+
         button:hover {
             background: #5568d3;
         }
-        
+
         button:disabled {
             background: #ccc;
             cursor: not-allowed;
         }
-        
+
         .info-box {
             background: #f5f5f5;
             padding: 20px;
             border-radius: 10px;
             margin-top: 20px;
         }
-        
+
         .info-box h3 {
             color: #333;
             margin-bottom: 10px;
             font-size: 18px;
         }
-        
+
         .info-box p {
             color: #666;
             font-size: 14px;
             line-height: 1.6;
         }
-        
+
         .logs {
             background: #1a1a1a;
             color: #0f0;
@@ -119,31 +120,32 @@
             overflow-y: auto;
             margin-top: 20px;
         }
-        
+
         .log-entry {
             margin-bottom: 5px;
             padding: 2px 0;
         }
-        
+
         .log-time {
             color: #888;
             margin-right: 5px;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Test Push Notifications</h1>
         <div class="site-url">Simulating: janko.in</div>
-        
+
         <div id="status" class="status info">
             Initializing push notifications...
         </div>
-        
+
         <button id="subscribeBtn" onclick="requestPermission()">
             🔔 Enable Notifications
         </button>
-        
+
         <div class="info-box">
             <h3>How to Test:</h3>
             <p>
@@ -153,7 +155,7 @@
                 4. You'll receive it here!
             </p>
         </div>
-        
+
         <div class="logs" id="logs">
             <div class="log-entry">
                 <span class="log-time">[READY]</span>
@@ -167,7 +169,7 @@
         const statusDiv = document.getElementById('status');
         const logsDiv = document.getElementById('logs');
         const subscribeBtn = document.getElementById('subscribeBtn');
-        
+
         function log(message, type = 'info') {
             const time = new Date().toLocaleTimeString();
             const logEntry = document.createElement('div');
@@ -177,31 +179,31 @@
             logsDiv.scrollTop = logsDiv.scrollHeight;
             console.log(message);
         }
-        
+
         function updateStatus(message, type = 'info') {
             statusDiv.textContent = message;
             statusDiv.className = `status ${type}`;
         }
-        
+
         // Initialize alertwise with janko site config
         log('Initializing Alertwise for janko.in...');
         alertwise.push(['init', {
-            appId: 'cbI77AqjJdQQS4KmxhmrtR6hsjElZm60',
+            appId: '1-ANsps7MS5hIVsXWmtRVa6qSJw70EsssiK',
             apiUrl: window.location.origin,
-            publicKey: 'BO0bf2s6mmC3xh8z39weji2Alatt7fRjtasavfhUyp_QMDYuCOe0UnQs_yUC7nX2gHd8919s563PYPzjIIopaww'
+            publicKey: 'BFc8AuSPhFbuLiHyP_rTcII2pCPFwkYLLdWK7zJbvzA_V_AZM6ona6csjpnWzdq7lIu-ijEwg4k9aoUNVAQYg7s'
         }]);
-        
+
         // Detect iOS and check if running as PWA
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                            window.navigator.standalone === true;
-        
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+            window.navigator.standalone === true;
+
         if (isIOS && !isStandalone) {
             updateStatus('📱 On iPhone: You must add this app to your Home Screen first!', 'error');
             subscribeBtn.textContent = '📱 Add to Home Screen Required';
             subscribeBtn.disabled = true;
             log('iOS detected - PWA installation required');
-            
+
             // Show iOS installation instructions
             const infoBox = document.querySelector('.info-box');
             infoBox.innerHTML = `
@@ -234,12 +236,12 @@
             subscribeBtn.disabled = true;
             log('Notifications not supported in this browser');
         }
-        
+
         function requestPermission() {
             log('Requesting notification permission...');
             updateStatus('Please allow notifications in the popup...', 'info');
-            
-            alertwise.requestPermission().then(function(permission) {
+
+            alertwise.requestPermission().then(function (permission) {
                 if (permission === 'granted') {
                     updateStatus('✅ Notifications enabled! You will receive push notifications.', 'success');
                     subscribeBtn.textContent = '✅ Notifications Enabled';
@@ -251,19 +253,19 @@
                 }
             });
         }
-        
+
         // Listen for service worker messages
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', function(event) {
+            navigator.serviceWorker.addEventListener('message', function (event) {
                 log('Received message from service worker: ' + JSON.stringify(event.data));
             });
-            
+
             log('Service worker support detected');
         }
-        
+
         // Override console.log to capture logs
         const originalLog = console.log;
-        console.log = function(...args) {
+        console.log = function (...args) {
             originalLog.apply(console, args);
             if (args[0] && typeof args[0] === 'string') {
                 if (args[0].includes('Service Worker') || args[0].includes('Push') || args[0].includes('subscription')) {
@@ -271,8 +273,9 @@
                 }
             }
         };
-        
+
         log('Test page loaded successfully');
     </script>
 </body>
+
 </html>

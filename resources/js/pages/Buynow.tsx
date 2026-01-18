@@ -3,8 +3,27 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { Header, Footer } from '@/components/frontend';
 import Checkout from '@/components/frontend/Checkout';
 
+interface PricingPlan {
+    id: number;
+    name: string;
+    slug: string;
+    description: string | null;
+    price: number;
+    currency: string;
+    billing_period: string | null;
+    features: string[];
+    is_active: boolean;
+    is_featured: boolean;
+    sort_order: number;
+    cta_text: string;
+}
+
+interface BuynowProps {
+    plans: PricingPlan[];
+}
+
 export default function Buynow() {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, plans } = usePage<SharedData & BuynowProps>().props;
 
     return (
         <>
@@ -15,7 +34,7 @@ export default function Buynow() {
             <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
                 <Header />
 
-                <Checkout />
+                <Checkout plans={plans || []} />
 
 
                 <Footer />
